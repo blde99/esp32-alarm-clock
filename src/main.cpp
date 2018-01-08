@@ -33,8 +33,8 @@ void drawImageDemo() {
     display.drawXbm(34, 14, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
 }
 
-const char* ssid     = "SatcomVM";
-const char* password = "VirginMedia123";
+const char* ssid     = "xxxxx";
+const char* password = "xxxxxxx";
 int PrevMin = 0;
 
 void setup() {

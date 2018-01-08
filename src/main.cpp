@@ -40,6 +40,8 @@ int PrevMin = 0;
 void setup() {
   Serial.begin(115200);
   Serial.println();
+  Serial.print(ESP.getCpuFreqMHz());
+  Serial.println("mHZ");
   Serial.println("Setting up...");
     Serial.print("Connecting to ");
     Serial.print(ssid);
@@ -47,20 +49,18 @@ void setup() {
     Serial.println(password);
 
     WiFi.begin(ssid, password);
-    drawImageDemo();
+  
     while (WiFi.status() != WL_CONNECTED) {
          delay(500);
          Serial.print(".");
     }
-  //Serial.println(ESP.getCpuFreqMHz());
-  //We set our ESP32 to wake up every 1 minute
+
   esp_sleep_enable_timer_wakeup(SleepTime);
   
   display.init();
 
   display.flipScreenVertically();
 
-  //display.clear();
   display.setContrast(0);
   configTime(0, 0, "pool.ntp.org");
   setTime(printLocalTime());
@@ -68,8 +68,9 @@ void setup() {
     drawTime(twoDigits(hour()), twoDigits(minute()));
     display.display();
   }
-  //delay(DISPLAY_ON_DURATION);
-  //display.displayOff();
+  delay(1000);
+  display.displayOff();
+  delay(2000);
   esp_deep_sleep_start();
 }
 

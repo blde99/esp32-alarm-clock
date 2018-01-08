@@ -33,8 +33,8 @@ void drawImageDemo() {
     display.drawXbm(34, 14, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
 }
 
-const char* ssid     = "xxxxx";
-const char* password = "xxxxxxx";
+const char* ssid     = "VM6584364";
+const char* password = "ngw7pxcbPrk9";
 int PrevMin = 0;
 
 void setup() {
@@ -47,7 +47,7 @@ void setup() {
     Serial.println(password);
 
     WiFi.begin(ssid, password);
-
+    drawImageDemo();
     while (WiFi.status() != WL_CONNECTED) {
          delay(500);
          Serial.print(".");

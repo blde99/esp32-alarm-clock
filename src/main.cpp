@@ -3,7 +3,11 @@
 #include <Wire.h>  // i2c library
 #include <TimeLib.h>
 #include <Time.h>
+
 #include <WiFi.h>
+
+//#include <ESP8266WiFi.h>
+//#include "ESP8266WebServer.h"
 
 // Includes for OLED screen
 #include "images.h"
@@ -29,18 +33,24 @@ void drawImageDemo() {
     display.drawXbm(34, 14, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
 }
 
+const char* ssid     = "SatcomVM";
+const char* password = "VirginMedia123";
+int PrevMin = 0;
+
 void setup() {
   Serial.begin(115200);
   Serial.println();
   Serial.println("Setting up...");
     Serial.print("Connecting to ");
-    Serial.println(ssid);
+    Serial.print(ssid);
+    Serial.print(" / ");
+    Serial.println(password);
 
-    WiFi.begin(ssid, pass);
+    WiFi.begin(ssid, password);
 
     while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
+         delay(500);
+         Serial.print(".");
     }
   //Serial.println(ESP.getCpuFreqMHz());
   //We set our ESP32 to wake up every 1 minute
@@ -52,11 +62,14 @@ void setup() {
 
   //display.clear();
   display.setContrast(0);
-  printLocalTime();
-  //drawTime(twoDigits(hour()), twoDigits(minute()));
-  display.display();
-  delay(DISPLAY_ON_DURATION);
-  display.displayOff();
+  configTime(0, 0, "pool.ntp.org");
+  setTime(printLocalTime());
+  if(PrevMin != minute()) {
+    drawTime(twoDigits(hour()), twoDigits(minute()));
+    display.display();
+  }
+  //delay(DISPLAY_ON_DURATION);
+  //display.displayOff();
   esp_deep_sleep_start();
 }
 

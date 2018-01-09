@@ -14,10 +14,70 @@ time_t printLocalTime()
     struct tm timeinfo;
     if(!getLocalTime(&timeinfo)){
         Serial.println("Failed to obtain time");
-        return NULL;
+        return 0;
     }
     time_t timeSinceEpoch = mktime(&timeinfo);
     Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
     Serial.println(timeSinceEpoch);
     return timeSinceEpoch;
+}
+
+void get_Time(){
+  Serial.print("Connecting to ");
+  Serial.print(ssid);
+  Serial.print(" / ");
+  Serial.println(password);
+
+  WiFi.begin(ssid, password);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  configTime(0, 0, "pool.ntp.org");
+  setTime(printLocalTime());
+}
+
+void print_wakeup_reason(){
+  esp_sleep_wakeup_cause_t wakeup_reason;
+
+  wakeup_reason = esp_sleep_get_wakeup_cause();
+
+  switch(wakeup_reason)
+  {
+    case 1  : Serial.println("Wakeup caused by external signal using RTC_IO"); break;
+    case 2  : Serial.println("Wakeup caused by external signal using RTC_CNTL"); break;
+    case 3  : Serial.println("Wakeup caused by timer"); break;
+    case 4  : Serial.println("Wakeup caused by touchpad"); break;
+    case 5  : Serial.println("Wakeup caused by ULP program"); break;
+    default : Serial.println("Wakeup was not caused by deep sleep"); break;
+  }
+}
+
+/*
+Method to print the touchpad by which ESP32
+has been awaken from sleep
+*/
+void print_wakeup_touchpad(){
+  touch_pad_t pin;
+  touchPin = esp_sleep_get_touchpad_wakeup_status();
+
+  switch(touchPin)
+  {
+    case 0  : Serial.println("Touch detected on GPIO 4"); break;
+    case 1  : Serial.println("Touch detected on GPIO 0"); break;
+    case 2  : Serial.println("Touch detected on GPIO 2"); break;
+    case 3  : Serial.println("Touch detected on GPIO 15"); get_Time(); break;
+    case 4  : Serial.println("Touch detected on GPIO 13"); break;
+    case 5  : Serial.println("Touch detected on GPIO 12"); break;
+    case 6  : Serial.println("Touch detected on GPIO 14"); break;
+    case 7  : Serial.println("Touch detected on GPIO 27"); break;
+    case 8  : Serial.println("Touch detected on GPIO 33"); break;
+    case 9  : Serial.println("Touch detected on GPIO 32"); break;
+    default : Serial.println("Wakeup not by touchpad"); break;
+  }
+}
+
+void callback(){
+  //placeholder callback function
 }

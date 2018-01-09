@@ -33,8 +33,6 @@ void drawImageDemo() {
     display.drawXbm(34, 14, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
 }
 
-const char* ssid     = "SatcomVM ";
-const char* password = "VirginMedia123";
 int PrevMin = 0;
 
 void setup() {
@@ -43,17 +41,17 @@ void setup() {
   Serial.print(ESP.getCpuFreqMHz());
   Serial.println("mHZ");
   Serial.println("Setting up...");
-    Serial.print("Connecting to ");
-    Serial.print(ssid);
-    Serial.print(" / ");
-    Serial.println(password);
 
-    WiFi.begin(ssid, password);
-  
-    while (WiFi.status() != WL_CONNECTED) {
-         delay(500);
-         Serial.print(".");
-    }
+
+  //Print the wakeup reason for ESP32 and touchpad too
+  print_wakeup_reason();
+  print_wakeup_touchpad();
+
+  //Setup interrupt on Touch Pad 3 (GPIO15)
+  touchAttachInterrupt(T3, callback, Threshold);
+
+  //Configure Touchpad as wakeup source
+  esp_sleep_enable_touchpad_wakeup();
 
   esp_sleep_enable_timer_wakeup(SleepTime);
   
@@ -62,15 +60,17 @@ void setup() {
   display.flipScreenVertically();
 
   display.setContrast(0);
-  configTime(0, 0, "pool.ntp.org");
-  setTime(printLocalTime());
-  if(PrevMin != minute()) {
+
+  //if(PrevMin != minute()) {
     drawTime(twoDigits(hour()), twoDigits(minute()));
     display.display();
-  }
+  //}
   delay(1000);
   display.displayOff();
   delay(2000);
+  
+  //Go to sleep now
+  Serial.println("Going to sleep now");
   esp_deep_sleep_start();
 }
 

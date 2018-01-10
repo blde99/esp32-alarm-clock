@@ -17,7 +17,8 @@ time_t printLocalTime()
         return 0;
     }
     time_t timeSinceEpoch = mktime(&timeinfo);
-    Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+    //Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+    Serial.print("Time since epoch: ");
     Serial.println(timeSinceEpoch);
     return timeSinceEpoch;
 }
@@ -25,6 +26,7 @@ time_t printLocalTime()
 void drawTime(String hourtoPrint, String mintoPrint) {
     // Font Demo1
     // create more fonts at http://oleddisplay.squix.ch/
+    display.clear();
     String timeToDraw = hourtoPrint +":"+ mintoPrint;
     display.setTextAlignment(TEXT_ALIGN_CENTER);
     display.setFont(DejaVu_Sans_40);
@@ -41,16 +43,17 @@ void drawImageDemo() {
 void get_Time(){
   Serial.print("Connecting to ");
   Serial.print(ssid);
-  Serial.print(" / ");
-  Serial.println(password);
+  Serial.print("...");
 
   WiFi.begin(ssid, password);
-  
+  drawImageDemo();
+  display.display();
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
-  configTime(0, 0, "pool.ntp.org");
+  Serial.println("!");
+  configTime(0, 0, ntpServerName);
   setTime(printLocalTime());
 }
 
@@ -85,9 +88,7 @@ void print_wakeup_touchpad(){
     case 2  : Serial.println("Touch detected on GPIO 2"); break;
     case 3  : Serial.println("Touch detected on GPIO 15"); 
               get_Time();
-              Serial.println("get_Time() done!");
               drawTime(twoDigits(hour()), twoDigits(minute()));
-              Serial.println("drawTime() done!");
               break;
     case 4  : Serial.println("Touch detected on GPIO 13"); break;
     case 5  : Serial.println("Touch detected on GPIO 12"); break;

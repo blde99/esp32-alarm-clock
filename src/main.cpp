@@ -27,6 +27,8 @@ void setup() {
   display.flipScreenVertically();
   display.setContrast(0);
 
+  pinMode(2, OUTPUT);
+
   Serial.begin(115200);
   Serial.println();
   Serial.print(ESP.getCpuFreqMHz());
@@ -46,9 +48,16 @@ void setup() {
 
   esp_sleep_enable_timer_wakeup(SleepTime);
   
-  delay(5000);
+  
+  for (int i=0; i<=5000; i++){
+    if ( i % 500 == 0 )
+    {
+        digitalWrite(2, !digitalRead(2));
+    }
+    delay(1);  
+  }
+  
   display.displayOff();
-    
   //Go to sleep now
   Serial.println("Going to sleep now");
   esp_deep_sleep_start();

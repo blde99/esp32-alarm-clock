@@ -13,3 +13,5 @@ const char* ntpServerName = "uk.pool.ntp.org";
 
 const char* ssid     = "SatcomVM";
 const char* password = "VirginMedia123";
+//const char* ssid     = "VM6584364";
+//const char* password = "ngw7pxcbPrk9";

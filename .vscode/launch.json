@@ -6,8 +6,8 @@
             "request": "launch",
             "cwd": "${workspaceRoot}",
             "name": "PlatformIO Debugger",
-            "target": "c:/Users/mattp/Documents/PlatformIO/Projects/esp32-alarm-clock/.pioenvs/esp32dev/firmware.elf",
-            "gdbpath": "C:/Users/mattp/.platformio/penv/Scripts/piodebuggdb",
+            "target": "c:/Users/mparkins/Documents/PlatformIO/Projects/esp32-alarm-clock/.pioenvs/esp32dev/firmware.elf",
+            "gdbpath": "C:/Users/mparkins/.platformio/penv/Scripts/piodebuggdb",
             "autorun": [ "source .pioinit" ]
         }
     ]

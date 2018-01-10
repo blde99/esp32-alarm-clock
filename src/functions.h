@@ -22,6 +22,22 @@ time_t printLocalTime()
     return timeSinceEpoch;
 }
 
+void drawTime(String hourtoPrint, String mintoPrint) {
+    // Font Demo1
+    // create more fonts at http://oleddisplay.squix.ch/
+    String timeToDraw = hourtoPrint +":"+ mintoPrint;
+    display.setTextAlignment(TEXT_ALIGN_CENTER);
+    display.setFont(DejaVu_Sans_40);
+    display.drawString(64, 10, timeToDraw);
+    display.display();
+}
+
+void drawImageDemo() {
+    // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
+    // on how to create xbm files
+    display.drawXbm(34, 14, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
+}
+
 void get_Time(){
   Serial.print("Connecting to ");
   Serial.print(ssid);
@@ -67,7 +83,12 @@ void print_wakeup_touchpad(){
     case 0  : Serial.println("Touch detected on GPIO 4"); break;
     case 1  : Serial.println("Touch detected on GPIO 0"); break;
     case 2  : Serial.println("Touch detected on GPIO 2"); break;
-    case 3  : Serial.println("Touch detected on GPIO 15"); get_Time(); break;
+    case 3  : Serial.println("Touch detected on GPIO 15"); 
+              get_Time();
+              Serial.println("get_Time() done!");
+              drawTime(twoDigits(hour()), twoDigits(minute()));
+              Serial.println("drawTime() done!");
+              break;
     case 4  : Serial.println("Touch detected on GPIO 13"); break;
     case 5  : Serial.println("Touch detected on GPIO 12"); break;
     case 6  : Serial.println("Touch detected on GPIO 14"); break;

@@ -14,28 +14,19 @@
 #include "SSD1306.h" // alias for `#include "SSD1306Wire.h"`
 
 #include "global_vars.h"
-#include "functions.h"
 
 // Initialize the OLED display using Wire library
 SSD1306  display(0x3c, 21, 22); //i2c address for SSD1306 is 0x3c and is connected to pins D21 and D22
 
-void drawTime(String hour, String min) {
-    // Font Demo1
-    // create more fonts at http://oleddisplay.squix.ch/
-    display.setTextAlignment(TEXT_ALIGN_CENTER);
-    display.setFont(DejaVu_Sans_40);
-    display.drawString(64, 10, hour +":"+ min);
-}
-
-void drawImageDemo() {
-    // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
-    // on how to create xbm files
-    display.drawXbm(34, 14, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
-}
+#include "functions.h"
 
 int PrevMin = 0;
 
 void setup() {
+  display.init();
+  display.flipScreenVertically();
+  display.setContrast(0);
+
   Serial.begin(115200);
   Serial.println();
   Serial.print(ESP.getCpuFreqMHz());
@@ -55,20 +46,9 @@ void setup() {
 
   esp_sleep_enable_timer_wakeup(SleepTime);
   
-  display.init();
-
-  display.flipScreenVertically();
-
-  display.setContrast(0);
-
-  //if(PrevMin != minute()) {
-    drawTime(twoDigits(hour()), twoDigits(minute()));
-    display.display();
-  //}
-  delay(1000);
+  delay(5000);
   display.displayOff();
-  delay(2000);
-  
+    
   //Go to sleep now
   Serial.println("Going to sleep now");
   esp_deep_sleep_start();

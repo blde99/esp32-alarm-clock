@@ -1,13 +1,6 @@
-unsigned int secsTillAlarm(int hourNow, int minNow, int secNow, int hourAlarm, int minAlarm, int secAlarm) {
-  tmElements_t  time1 = {Hour(), minute(), second(), 0, date(),  month(), year()}, // 0:00:00 1st Jan 2015
-                time2 = {0, 0, 0, 0, 8, 10, CalendarYrToTm(2015)}; // 0:00:00 8th Oct 2015 (today)
-    if (!hourAlarm) { hourAlarm = 8;}
-    if (!minAlarm) { minAlarm = 0;}
-    if (!secAlarm) { secAlarm = 0;}
-    String SerialString = String(hourNow) + "\t" + String(minNow) + "\t" + String(secNow) + "\t" + String(hourAlarm) + "\t" + String(minAlarm) + "\t" + String(secAlarm);
-
-    Serial.println("HourNow\tMinNow\tSecNow\tHourAlarm\tMinAlarm\tSecAlarm");
-    Serial.println(SerialString);
+unsigned int secsTillAlarm( ) {
+  time_t t = now(); // Store the current time in time 
+  Serial.println(t);
 }
 
 // utility function for digital clock display: prints leading 0

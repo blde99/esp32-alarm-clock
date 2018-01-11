@@ -48,6 +48,8 @@ void setup() {
 
   esp_sleep_enable_timer_wakeup(SleepTime);
   
+   secsTillAlarm();
+
   
   for (int i=0; i<=5000; i++){
     if ( i % 500 == 0 )
@@ -56,7 +58,6 @@ void setup() {
     }
     delay(1);  
   }
-  secsTillAlarm(hour(),minute(),second(),8,0,0);
   display.displayOff();
   //Go to sleep now
   Serial.println("Going to sleep now");

@@ -1,26 +1,16 @@
 #include <Arduino.h>
-#include "Bounce2.h" // for button debouncing
-#include <Wire.h>  // i2c library
-#include <TimeLib.h>
-#include <Time.h>
+#include "Bounce2.h"      // for button debouncing
+#include <Wire.h>         // i2c library
+#include <TimeLib.h>      // Time library - this is a clock after all!
 
-#include <WiFi.h>
-
-//#include <ESP8266WiFi.h>
-//#include "ESP8266WebServer.h"
+#include <WiFi.h>         // Library used primarily for getting the time from the internet
 
 // Includes for OLED screen
-#include "images.h"
-#include "SSD1306.h" // alias for `#include "SSD1306Wire.h"`
+#include "images.h"       // Include file containing custom images for OLED screen
+#include "SSD1306.h"      // Include library for OLED display
 
-#include "global_vars.h"
-
-// Initialize the OLED display using Wire library
-SSD1306  display(0x3c, 21, 22); //i2c address for SSD1306 is 0x3c and is connected to pins D21 and D22
-
-#include "functions.h"
-
-int PrevMin = 0;
+#include "global_vars.h"  // Include global variables
+#include "functions.h"    // Include custom functions
 
 void setup() {
   display.init();

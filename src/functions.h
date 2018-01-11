@@ -1,6 +1,11 @@
 unsigned int secsTillAlarm( ) {
   time_t t = now(); // Store the current time in time 
+  int hourAlarm = 8;
+  int minAlarm = 0;
+  int secAlarm = 0;
+ 
   Serial.println(t);
+  
 }
 
 // utility function for digital clock display: prints leading 0

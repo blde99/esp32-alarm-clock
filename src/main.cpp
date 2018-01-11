@@ -2,7 +2,6 @@
 #include "Bounce2.h"      // for button debouncing
 #include <Wire.h>         // i2c library
 #include <TimeLib.h>      // Time library - this is a clock after all!
-
 #include <WiFi.h>         // Library used primarily for getting the time from the internet
 
 // Includes for OLED screen

@@ -56,7 +56,7 @@ void setup() {
     }
     delay(1);  
   }
-  
+  secsTillAlarm(hour(),minute(),second(),8,0,0);
   display.displayOff();
   //Go to sleep now
   Serial.println("Going to sleep now");

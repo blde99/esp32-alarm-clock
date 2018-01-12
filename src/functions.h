@@ -50,11 +50,11 @@ time_t printLocalTime()
     return timeSinceEpoch;
 }
 
-void drawTime(String hourtoPrint, String mintoPrint) {
+void drawTime(int hourtoPrint, int mintoPrint) {
     // Font Demo1
     // create more fonts at http://oleddisplay.squix.ch/
     display.clear();
-    String timeToDraw = hourtoPrint +":"+ mintoPrint;
+    String timeToDraw = String(twoDigits(hourtoPrint)) + ":" + String(twoDigits(mintoPrint));
     display.setTextAlignment(TEXT_ALIGN_CENTER);
     display.setFont(DejaVu_Sans_40);
     display.drawString(64, 10, timeToDraw);
@@ -68,31 +68,31 @@ void drawImageDemo() {
 }
 
 void get_Time(){
-  preferences.begin("alarmclock", false);
-  ssid = preferences.getString("ssid-work");
-  password = preferences.getString("password-work");
-  preferences.end();
+  // preferences.begin("alarmclock", false);
+  // ssid = preferences.getString("ssid-home");
+  // password = preferences.getString("password-home");
+  // preferences.end();
   
-  int counter = 0;
-  Serial.print("Connecting to ");
-  Serial.print(ssid);
+  // int counter = 0;
+  // Serial.print("Connecting to ");
+  // Serial.print(ssid);
 
-  WiFi.begin(ssid.c_str(), password.c_str());
-  drawImageDemo();
-  display.display();
-  while ((WiFi.status() != WL_CONNECTED) && (counter <= 10)) {
-    delay(500);
-    Serial.print(".");
-    counter++;
-  }
-  if(WiFi.status() == WL_CONNECTED) {
-    Serial.println("Connected!");
-    configTime(0, 0, ntpServerName);
-    setTime(printLocalTime());
-  }
-  else {
-    Serial.println("Failed to connect!");
-  }
+  // WiFi.begin(ssid.c_str(), password.c_str());
+  // drawImageDemo();
+  // display.display();
+  // while ((WiFi.status() != WL_CONNECTED) && (counter <= 10)) {
+  //   delay(500);
+  //   Serial.print(".");
+  //   counter++;
+  // }
+  // if(WiFi.status() == WL_CONNECTED) {
+  //   Serial.println("Connected!");
+  //   configTime(0, 0, ntpServerName);
+  //   setTime(printLocalTime());
+  // }
+  // else {
+  //   Serial.println("Failed to connect!");
+  // }
 }
 
 void print_wakeup_reason(){
@@ -116,6 +116,7 @@ Method to print the touchpad by which ESP32
 has been awaken from sleep
 */
 void print_wakeup_touchpad(){
+  
   touch_pad_t pin;
   touchPin = esp_sleep_get_touchpad_wakeup_status();
 
@@ -125,9 +126,12 @@ void print_wakeup_touchpad(){
     case 1  : Serial.println("Touch detected on GPIO 0"); break;
     case 2  : Serial.println("Touch detected on GPIO 2"); break;
     case 3  : Serial.println("Touch detected on GPIO 15"); 
-              get_Time();
-              drawTime(twoDigits(hour()), twoDigits(minute()));
-              break;
+                rtcTime = rtc.now(); // Get the time from the RTC module
+                Serial.print(String(rtcTime.hour()));
+                Serial.print(":");
+                Serial.println(String(rtcTime.minute()));
+                drawTime(rtcTime.hour(),rtcTime.minute());
+                break;
     case 4  : Serial.println("Touch detected on GPIO 13"); break;
     case 5  : Serial.println("Touch detected on GPIO 12"); break;
     case 6  : Serial.println("Touch detected on GPIO 14"); break;

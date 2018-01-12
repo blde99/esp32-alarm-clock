@@ -9,6 +9,7 @@
 // Includes for OLED screen
 #include "images.h"       // Include file containing custom images for OLED screen
 #include "SSD1306.h"      // Include library for OLED display
+#include "RTClib.h"       // Library for DS1307 RTC
 
 #include "global_vars.h"  // Include global variables
 #include "functions.h"    // Include custom functions
@@ -21,6 +22,19 @@ void setup() {
   Serial.print(ESP.getCpuFreqMHz());
   Serial.println("mHZ");
   Serial.println("Setting up...");
+  
+  if (!rtc.begin()) {
+    Serial.println("Couldn't find RTC module!");
+  while (1);
+  }
+  if (!rtc.isrunning()) {
+  Serial.println("RTC module is not running!");
+    // following line sets the RTC to the date & time this sketch was compiled
+     //  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    // This line sets the RTC with an explicit date & time, for example to set
+    // January 21, 2014 at 3am you would call:
+  }
+  rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
   
   //Initialize display
   display.init();
@@ -61,13 +75,13 @@ void setup() {
   Serial.print(high);   
   Serial.println(" microseconds.");
  
-  // for (int i=0; i<=5000; i++){
-  //   if ( i % 500 == 0 )
-  //   {
-  //       digitalWrite(2, !digitalRead(2));
-  //   }
-  //   delay(1);  
-  // }
+  for (int i=0; i<=5000; i++){
+    if ( i % 500 == 0 )
+    {
+        // digitalWrite(2, !digitalRead(2));
+    }
+    delay(1);  
+  }
   display.displayOff();
   //Go to sleep now
   Serial.println("Going to sleep now");

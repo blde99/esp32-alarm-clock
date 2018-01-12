@@ -16,8 +16,10 @@ const char* ntpServerName = "uk.pool.ntp.org";
 String ssid;
 String password;
 
-// Initialize the OLED display using Wire library
+// Initialize devices
 SSD1306  display(0x3c, 21, 22); //i2c address for SSD1306 is 0x3c and is connected to pins D21 and D22
+RTC_DS1307 rtc; // RTC
+DateTime rtcTime;
 
 const uint32_t microSecToSec = 1000000;
 

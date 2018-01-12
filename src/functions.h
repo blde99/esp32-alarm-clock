@@ -1,11 +1,28 @@
-unsigned int secsTillAlarm( ) {
+uint64_t secsTillAlarm() {
   time_t t = now(); // Store the current time in time 
-  int hourAlarm = 8;
-  int minAlarm = 0;
-  int secAlarm = 0;
- 
-  Serial.println(t);
-  
+  int secondsTillAlarm = 0;
+
+  // String alarmString = String(hourAlarm) + "\t" + String(minAlarm) + "\t" + String(secAlarm);
+  // Serial.println("hourAlarm\tminAlarm\tsecAlarm");
+  // String timeString = String(hour()) + "\t" + String(minute()) + "\t" + String(second());
+  // Serial.println("hourNow\tminNow\tsecNow");
+  // Serial.println(timeString);
+
+  int hoursLeft = hourAlarm - hour();
+  if (hoursLeft < 0) { hoursLeft += 24; }
+  int minsLeft = minAlarm - minute();
+  if (minsLeft < 0) { minsLeft += 60; }
+  int secsLeft = secAlarm - second();
+  if (secsLeft < 0) { secsLeft += 60; }
+
+  secondsTillAlarm = (hoursLeft * 3600) + (minsLeft * 60) + secsLeft;
+
+  // String timeLeftString = String(hoursLeft) + "\t" + String(minsLeft) + "\t" + String(secsLeft);
+  // Serial.println("hourLeft\tminLeft\tsecLeft");
+  // Serial.println(timeLeftString);
+  // Serial.println(secondsTillAlarm);
+
+  return secondsTillAlarm - 70;  
 }
 
 // utility function for digital clock display: prints leading 0
@@ -51,20 +68,31 @@ void drawImageDemo() {
 }
 
 void get_Time(){
+  preferences.begin("alarmclock", false);
+  ssid = preferences.getString("ssid-work");
+  password = preferences.getString("password-work");
+  preferences.end();
+  
+  int counter = 0;
   Serial.print("Connecting to ");
   Serial.print(ssid);
-  Serial.print("...");
 
-  WiFi.begin(ssid, password);
+  WiFi.begin(ssid.c_str(), password.c_str());
   drawImageDemo();
   display.display();
-  while (WiFi.status() != WL_CONNECTED) {
+  while ((WiFi.status() != WL_CONNECTED) && (counter <= 10)) {
     delay(500);
     Serial.print(".");
+    counter++;
   }
-  Serial.println("!");
-  configTime(0, 0, ntpServerName);
-  setTime(printLocalTime());
+  if(WiFi.status() == WL_CONNECTED) {
+    Serial.println("Connected!");
+    configTime(0, 0, ntpServerName);
+    setTime(printLocalTime());
+  }
+  else {
+    Serial.println("Failed to connect!");
+  }
 }
 
 void print_wakeup_reason(){
@@ -76,7 +104,7 @@ void print_wakeup_reason(){
   {
     case 1  : Serial.println("Wakeup caused by external signal using RTC_IO"); break;
     case 2  : Serial.println("Wakeup caused by external signal using RTC_CNTL"); break;
-    case 3  : Serial.println("Wakeup caused by timer"); break;
+    case 3  : Serial.println("Wakeup caused by timer"); digitalWrite(2, HIGH); break;
     case 4  : Serial.println("Wakeup caused by touchpad"); break;
     case 5  : Serial.println("Wakeup caused by ULP program"); break;
     default : Serial.println("Wakeup was not caused by deep sleep"); break;

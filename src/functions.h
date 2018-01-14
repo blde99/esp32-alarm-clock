@@ -1,5 +1,5 @@
 uint64_t secsTillAlarm() {
-  time_t t = now(); // Store the current time in time 
+  DateTime t = rtc.now(); // Store the current time in time 
   int secondsTillAlarm = 0;
 
   // String alarmString = String(hourAlarm) + "\t" + String(minAlarm) + "\t" + String(secAlarm);
@@ -8,11 +8,11 @@ uint64_t secsTillAlarm() {
   // Serial.println("hourNow\tminNow\tsecNow");
   // Serial.println(timeString);
 
-  int hoursLeft = hourAlarm - hour();
+  int hoursLeft = hourAlarm - t.hour();
   if (hoursLeft < 0) { hoursLeft += 24; }
-  int minsLeft = minAlarm - minute();
+  int minsLeft = minAlarm - t.minute();
   if (minsLeft < 0) { minsLeft += 60; }
-  int secsLeft = secAlarm - second();
+  int secsLeft = secAlarm - t.second();
   if (secsLeft < 0) { secsLeft += 60; }
 
   secondsTillAlarm = (hoursLeft * 3600) + (minsLeft * 60) + secsLeft;
@@ -68,31 +68,33 @@ void drawImageDemo() {
 }
 
 void get_Time(){
-  // preferences.begin("alarmclock", false);
-  // ssid = preferences.getString("ssid-home");
-  // password = preferences.getString("password-home");
-  // preferences.end();
+  preferences.begin("alarmclock", false);
+  ssid = preferences.getString("ssid-home");
+  password = preferences.getString("password-home");
+  preferences.end();
   
-  // int counter = 0;
-  // Serial.print("Connecting to ");
-  // Serial.print(ssid);
+  int counter = 0;
+  Serial.print("Connecting to ");
+  Serial.print(ssid);
 
-  // WiFi.begin(ssid.c_str(), password.c_str());
-  // drawImageDemo();
-  // display.display();
-  // while ((WiFi.status() != WL_CONNECTED) && (counter <= 10)) {
-  //   delay(500);
-  //   Serial.print(".");
-  //   counter++;
-  // }
-  // if(WiFi.status() == WL_CONNECTED) {
-  //   Serial.println("Connected!");
-  //   configTime(0, 0, ntpServerName);
-  //   setTime(printLocalTime());
-  // }
-  // else {
-  //   Serial.println("Failed to connect!");
-  // }
+  WiFi.begin(ssid.c_str(), password.c_str());
+  drawImageDemo();
+  display.display();
+  while ((WiFi.status() != WL_CONNECTED) && (counter <= 10)) {
+    delay(500);
+    Serial.print(".");
+    counter++;
+  }
+  if(WiFi.status() == WL_CONNECTED) {
+    Serial.println("Connected!");
+    configTime(0, 0, ntpServerName);
+    //setTime(printLocalTime());
+    rtc.adjust(printLocalTime());
+    //Serial.println(DateTime(printLocalTime())):
+  }
+  else {
+    Serial.println("Failed to connect!");
+  }
 }
 
 void print_wakeup_reason(){
@@ -111,6 +113,14 @@ void print_wakeup_reason(){
   }
 }
 
+void callbackWake(){
+                rtcTime = rtc.now(); // Get the time from the RTC module
+                Serial.print(String(rtcTime.hour()));
+                Serial.print(":");
+                Serial.println(String(rtcTime.minute()));
+                drawTime(rtcTime.hour(),rtcTime.minute());
+                }
+                
 /*
 Method to print the touchpad by which ESP32
 has been awaken from sleep
@@ -125,13 +135,7 @@ void print_wakeup_touchpad(){
     case 0  : Serial.println("Touch detected on GPIO 4"); break;
     case 1  : Serial.println("Touch detected on GPIO 0"); break;
     case 2  : Serial.println("Touch detected on GPIO 2"); break;
-    case 3  : Serial.println("Touch detected on GPIO 15"); 
-                rtcTime = rtc.now(); // Get the time from the RTC module
-                Serial.print(String(rtcTime.hour()));
-                Serial.print(":");
-                Serial.println(String(rtcTime.minute()));
-                drawTime(rtcTime.hour(),rtcTime.minute());
-                break;
+    case 3  : Serial.println("Touch detected on GPIO 15"); callbackWake(); break;
     case 4  : Serial.println("Touch detected on GPIO 13"); break;
     case 5  : Serial.println("Touch detected on GPIO 12"); break;
     case 6  : Serial.println("Touch detected on GPIO 14"); break;
@@ -140,8 +144,4 @@ void print_wakeup_touchpad(){
     case 9  : Serial.println("Touch detected on GPIO 32"); break;
     default : Serial.println("Wakeup not by touchpad"); break;
   }
-}
-
-void callback(){
-  //placeholder callback function
 }

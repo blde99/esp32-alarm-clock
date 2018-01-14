@@ -23,6 +23,11 @@ void setup() {
   Serial.println("mHZ");
   Serial.println("Setting up...");
   
+    //Initialize display
+  display.init();
+  display.flipScreenVertically();
+  display.setContrast(0);
+
   if (!rtc.begin()) {
     Serial.println("Couldn't find RTC module!");
   while (1);
@@ -34,12 +39,12 @@ void setup() {
     // This line sets the RTC with an explicit date & time, for example to set
     // January 21, 2014 at 3am you would call:
   }
-  rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
-  
-  //Initialize display
-  display.init();
-  display.flipScreenVertically();
-  display.setContrast(0);
+  //rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+//get_Time();
+
+
+  //DateTime TimeNow = rtc.now();
+  //drawTime(TimeNow.hour(),TimeNow.minute());
   
   preferences.begin("alarmclock", false);
   // preferences.putUInt("hourAlarm", 15);
@@ -55,7 +60,7 @@ void setup() {
   print_wakeup_touchpad();
 
   //Setup interrupt on Touch Pad 3 (GPIO15)
-  touchAttachInterrupt(T3, callback, Threshold);
+  touchAttachInterrupt(T3, callbackWake, Threshold);
 
   //Configure Touchpad as wakeup source
   esp_sleep_enable_touchpad_wakeup();

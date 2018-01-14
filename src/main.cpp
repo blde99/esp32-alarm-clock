@@ -23,22 +23,10 @@ void setup() {
   Serial.println("mHZ");
   Serial.println("Setting up...");
   
-    //Initialize display
-  display.init();
-  display.flipScreenVertically();
-  display.setContrast(0);
-
-  if (!rtc.begin()) {
-    Serial.println("Couldn't find RTC module!");
-  while (1);
-  }
-  if (!rtc.isrunning()) {
-  Serial.println("RTC module is not running!");
-    // following line sets the RTC to the date & time this sketch was compiled
-     //  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-    // This line sets the RTC with an explicit date & time, for example to set
-    // January 21, 2014 at 3am you would call:
-  }
+displayInit();
+rtcInit();
+getAlarmSettings();
+//get_Time();
   //rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
 //get_Time();
 
@@ -46,26 +34,23 @@ void setup() {
   //DateTime TimeNow = rtc.now();
   //drawTime(TimeNow.hour(),TimeNow.minute());
   
-  preferences.begin("alarmclock", false);
-  // preferences.putUInt("hourAlarm", 15);
-  // preferences.putUInt("minAlarm", 0);
-  // preferences.putUInt("secAlarm", 0);
-  hourAlarm = preferences.getUInt("hourAlarm", 0);
-  minAlarm = preferences.getUInt("minAlarm", 0);
-  secAlarm = preferences.getUInt("secAlarm", 0);
-  preferences.end();
+
 
   //Print the wakeup reason for ESP32 and touchpad too
   print_wakeup_reason();
   print_wakeup_touchpad();
 
   //Setup interrupt on Touch Pad 3 (GPIO15)
-  touchAttachInterrupt(T3, callbackWake, Threshold);
+  touchAttachInterrupt(T3, callback, Threshold);
+  
+
+    //Setup interrupt on Touch Pad 3 (GPIO4)
+  //touchAttachInterrupt(T0, callback, Threshold);
 
   //Configure Touchpad as wakeup source
   esp_sleep_enable_touchpad_wakeup();
 
-  uint32_t secsToSleep = secsTillAlarm();
+  uint32_t secsToSleep = secsTillAlarm(rtc.now());
   Serial.println(secsToSleep);
 
   uint64_t iTimeToSleep = secsToSleep * microSecToSec;

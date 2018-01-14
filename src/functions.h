@@ -1,12 +1,36 @@
-uint64_t secsTillAlarm() {
-  DateTime t = rtc.now(); // Store the current time in time 
-  int secondsTillAlarm = 0;
+void getAlarmSettings () {
+  preferences.begin("alarmclock", false);
+  // preferences.putUInt("hourAlarm", 15);
+  // preferences.putUInt("minAlarm", 0);
+  // preferences.putUInt("secAlarm", 0);
+  hourAlarm = preferences.getUInt("hourAlarm", 0);
+  minAlarm = preferences.getUInt("minAlarm", 0);
+  secAlarm = preferences.getUInt("secAlarm", 0);
+  preferences.end();
+}
+void displayInit () {
+  //Initialize display
+  display.init();
+  display.flipScreenVertically();
+  display.setContrast(0);
+}
 
-  // String alarmString = String(hourAlarm) + "\t" + String(minAlarm) + "\t" + String(secAlarm);
-  // Serial.println("hourAlarm\tminAlarm\tsecAlarm");
-  // String timeString = String(hour()) + "\t" + String(minute()) + "\t" + String(second());
-  // Serial.println("hourNow\tminNow\tsecNow");
-  // Serial.println(timeString);
+void rtcInit () {
+  if (!rtc.begin()) {
+    Serial.println("Couldn't find RTC module!");
+  while (1);
+  }
+  if (!rtc.isrunning()) {
+  Serial.println("RTC module is not running!");
+    // following line sets the RTC to the date & time this sketch was compiled
+     //  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    // This line sets the RTC with an explicit date & time, for example to set
+    // January 21, 2014 at 3am you would call:
+  }
+}
+
+uint64_t secsTillAlarm(DateTime t) {
+  int secondsTillAlarm = 0;
 
   int hoursLeft = hourAlarm - t.hour();
   if (hoursLeft < 0) { hoursLeft += 24; }
@@ -16,11 +40,6 @@ uint64_t secsTillAlarm() {
   if (secsLeft < 0) { secsLeft += 60; }
 
   secondsTillAlarm = (hoursLeft * 3600) + (minsLeft * 60) + secsLeft;
-
-  // String timeLeftString = String(hoursLeft) + "\t" + String(minsLeft) + "\t" + String(secsLeft);
-  // Serial.println("hourLeft\tminLeft\tsecLeft");
-  // Serial.println(timeLeftString);
-  // Serial.println(secondsTillAlarm);
 
   return secondsTillAlarm - 70;  
 }
@@ -97,6 +116,37 @@ void get_Time(){
   }
 }
 
+void showTime () {
+  rtcTime = rtc.now(); // Get the time from the RTC module
+  Serial.print(String(rtcTime.hour()));
+  Serial.print(":");
+  Serial.println(String(rtcTime.minute()));
+  drawTime(rtcTime.hour(),rtcTime.minute());
+}
+
+void toggleAlarmSet () {
+  bool isAlarmSet;
+
+  preferences.begin("alarmClock", false);
+  preferences.putBool("alarmSet", !preferences.getBool("alarmSet", true));
+  isAlarmSet = preferences.getBool("alarmSet");
+  preferences.end();
+  
+  display.clear();
+  display.setTextAlignment(TEXT_ALIGN_CENTER);
+  display.setFont(ArialMT_Plain_24);
+  if (isAlarmSet) {
+    Serial.print("Alarm is SET!");
+    display.drawString(64, 10, "SET!");
+    display.display();
+  }
+  else {
+    Serial.print("Alarm is NOT SET!");
+    display.drawString(64, 10, "NOT SET!");
+    display.display();
+  }
+}
+
 void print_wakeup_reason(){
   esp_sleep_wakeup_cause_t wakeup_reason;
 
@@ -113,12 +163,7 @@ void print_wakeup_reason(){
   }
 }
 
-void callbackWake(){
-                rtcTime = rtc.now(); // Get the time from the RTC module
-                Serial.print(String(rtcTime.hour()));
-                Serial.print(":");
-                Serial.println(String(rtcTime.minute()));
-                drawTime(rtcTime.hour(),rtcTime.minute());
+void callback(){
                 }
                 
 /*
@@ -132,10 +177,10 @@ void print_wakeup_touchpad(){
 
   switch(touchPin)
   {
-    case 0  : Serial.println("Touch detected on GPIO 4"); break;
+    case 0  : Serial.println("Touch detected on GPIO 4"); toggleAlarmSet(); break;
     case 1  : Serial.println("Touch detected on GPIO 0"); break;
     case 2  : Serial.println("Touch detected on GPIO 2"); break;
-    case 3  : Serial.println("Touch detected on GPIO 15"); callbackWake(); break;
+    case 3  : Serial.println("Touch detected on GPIO 15"); showTime(); break;
     case 4  : Serial.println("Touch detected on GPIO 13"); break;
     case 5  : Serial.println("Touch detected on GPIO 12"); break;
     case 6  : Serial.println("Touch detected on GPIO 14"); break;

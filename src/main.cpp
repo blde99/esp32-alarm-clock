@@ -16,6 +16,7 @@
 
 void setup() {
   pinMode(2, OUTPUT);
+  pinMode(BTN_ENC_SET_ALARM, INPUT_PULLDOWN);
 
   Serial.begin(115200);
   Serial.println();
@@ -58,7 +59,9 @@ getAlarmSettings();
   }
 
   for (int i=0; i<=2000; i++){
-    
+    if (digitalRead(BTN_ENC_SET_ALARM)){
+      Serial.println("You pushed my button!");
+    }
     delay(1);  
   }
   display.displayOff();

@@ -3,7 +3,7 @@
 // #define TIME_TO_SLEEP 120        // Time ESP32 will go to sleep (in minutes)
 // const int SleepTime = TIME_TO_SLEEP * uS_TO_s_FACTOR; // SleepTime will is 5 Seconds
 #define DISPLAY_ON_DURATION 2000
-#define BTN_ENC_SET_ALARM 33
+#define BTN_ENC_SET_ALARM 23
 
 
 // Definitions for touchpad wake up

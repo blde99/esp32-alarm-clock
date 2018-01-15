@@ -1,14 +1,17 @@
 void getAlarmSettings () {
+  Serial.println("Getting alarm settings");
   preferences.begin("alarmclock", false);
   // preferences.putUInt("hourAlarm", 15);
   // preferences.putUInt("minAlarm", 0);
   // preferences.putUInt("secAlarm", 0);
+  isAlarmSet = preferences.getBool("alarmSet");
   hourAlarm = preferences.getUInt("hourAlarm", 0);
   minAlarm = preferences.getUInt("minAlarm", 0);
   secAlarm = preferences.getUInt("secAlarm", 0);
   preferences.end();
 }
 void displayInit () {
+  Serial.println("Init display...");
   //Initialize display
   display.init();
   display.flipScreenVertically();
@@ -16,6 +19,7 @@ void displayInit () {
 }
 
 void rtcInit () {
+  Serial.println("Init RTC...");
   if (!rtc.begin()) {
     Serial.println("Couldn't find RTC module!");
   while (1);
@@ -63,7 +67,6 @@ time_t printLocalTime()
         return 0;
     }
     time_t timeSinceEpoch = mktime(&timeinfo);
-    //Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
     Serial.print("Time since epoch: ");
     Serial.println(timeSinceEpoch);
     return timeSinceEpoch;
@@ -88,8 +91,8 @@ void drawImageDemo() {
 
 void get_Time(){
   preferences.begin("alarmclock", false);
-  ssid = preferences.getString("ssid-home");
-  password = preferences.getString("password-home");
+  ssid = preferences.getString("ssid-work");
+  password = preferences.getString("password-work");
   preferences.end();
   
   int counter = 0;
@@ -125,9 +128,8 @@ void showTime () {
 }
 
 void toggleAlarmSet () {
-  bool isAlarmSet;
-
-  preferences.begin("alarmClock", false);
+  preferences.begin("alarmclock", false);
+  //preferences.putBool("alarmSet", true);
   preferences.putBool("alarmSet", !preferences.getBool("alarmSet", true));
   isAlarmSet = preferences.getBool("alarmSet");
   preferences.end();
@@ -136,14 +138,14 @@ void toggleAlarmSet () {
   display.setTextAlignment(TEXT_ALIGN_CENTER);
   display.setFont(ArialMT_Plain_24);
   if (isAlarmSet) {
-    Serial.print("Alarm is SET!");
-    display.drawString(64, 10, "SET!");
-    display.display();
+    Serial.println("Alarm is SET!");
+    // display.drawString(64, 10, "SET!");
+    // display.display();
   }
   else {
-    Serial.print("Alarm is NOT SET!");
-    display.drawString(64, 10, "NOT SET!");
-    display.display();
+    Serial.println("Alarm is NOT SET!");
+    // display.drawString(64, 10, "NOT SET!");
+    // display.display();
   }
 }
 
@@ -163,8 +165,7 @@ void print_wakeup_reason(){
   }
 }
 
-void callback(){
-                }
+void callback(){}
                 
 /*
 Method to print the touchpad by which ESP32
@@ -177,7 +178,7 @@ void print_wakeup_touchpad(){
 
   switch(touchPin)
   {
-    case 0  : Serial.println("Touch detected on GPIO 4"); toggleAlarmSet(); break;
+    case 0  : Serial.println("Touch detected on GPIO 4"); get_Time(); break;
     case 1  : Serial.println("Touch detected on GPIO 0"); break;
     case 2  : Serial.println("Touch detected on GPIO 2"); break;
     case 3  : Serial.println("Touch detected on GPIO 15"); showTime(); break;

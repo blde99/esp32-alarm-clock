@@ -19,13 +19,13 @@ void setup() {
 
   Serial.begin(115200);
   Serial.println();
-  Serial.print(ESP.getCpuFreqMHz());
-  Serial.println("mHZ");
   Serial.println("Setting up...");
   
 displayInit();
 rtcInit();
+//toggleAlarmSet();
 getAlarmSettings();
+
 //get_Time();
   //rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
 //get_Time();
@@ -40,36 +40,25 @@ getAlarmSettings();
   print_wakeup_reason();
   print_wakeup_touchpad();
 
-  //Setup interrupt on Touch Pad 3 (GPIO15)
-  touchAttachInterrupt(T3, callback, Threshold);
-  
+  touchAttachInterrupt(T3, callback, Threshold);  //Setup interrupt on Touch Pad 3 (GPIO15)
+  touchAttachInterrupt(T0, callback, Threshold);  //Setup interrupt on Touch Pad 3 (GPIO4)
+  esp_sleep_enable_touchpad_wakeup();             //Configure Touchpad as wakeup source
 
-    //Setup interrupt on Touch Pad 3 (GPIO4)
-  //touchAttachInterrupt(T0, callback, Threshold);
+  if (isAlarmSet){
+    uint32_t secsToSleep = secsTillAlarm(rtc.now());
+    uint64_t iTimeToSleep = secsToSleep * microSecToSec;
+    esp_sleep_enable_timer_wakeup(iTimeToSleep);
 
-  //Configure Touchpad as wakeup source
-  esp_sleep_enable_touchpad_wakeup();
+    Serial.print("Will sleep for ");
+    Serial.print(secsToSleep);
+    Serial.println(" seconds.");
+  }
+  else {
+    Serial.println("Will sleep until interrupted by touch or alarm setting...");
+  }
 
-  uint32_t secsToSleep = secsTillAlarm(rtc.now());
-  Serial.println(secsToSleep);
-
-  uint64_t iTimeToSleep = secsToSleep * microSecToSec;
-  esp_sleep_enable_timer_wakeup(iTimeToSleep);
-
-  Serial.print("Will sleep for ");
-  uint32_t low = iTimeToSleep % 0xFFFFFFFF; 
-  uint32_t high = (iTimeToSleep >> 32) % 0xFFFFFFFF;
-
-  Serial.print(low);
-  Serial.print(".");
-  Serial.print(high);   
-  Serial.println(" microseconds.");
- 
-  for (int i=0; i<=5000; i++){
-    if ( i % 500 == 0 )
-    {
-        // digitalWrite(2, !digitalRead(2));
-    }
+  for (int i=0; i<=2000; i++){
+    
     delay(1);  
   }
   display.displayOff();

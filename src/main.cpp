@@ -3,6 +3,7 @@
 #include <Wire.h>         // i2c library
 #include <Time.h>      // Time library - this is a clock after all!
 #include <Timelib.h>
+#include "Timezone.h"
 #include <WiFi.h>         // Library used primarily for getting the time from the internet
 #include <Preferences.h>  // Library for storing data that needs to survive a reboot
 
@@ -16,7 +17,7 @@
 
 void setup() {
   pinMode(2, OUTPUT);
-  pinMode(BTN_ENC_SET_ALARM, INPUT_PULLDOWN);
+  pinMode(BTN_ENC_SET_ALARM, INPUT);
 
   Serial.begin(115200);
   Serial.println();
@@ -59,9 +60,9 @@ getAlarmSettings();
   }
 
   for (int i=0; i<=2000; i++){
-    if (digitalRead(BTN_ENC_SET_ALARM)){
-      Serial.println("You pushed my button!");
-    }
+    Serial.print("Button state: ");
+    Serial.println(digitalRead(BTN_ENC_SET_ALARM));
+    digitalWrite(2, digitalRead(BTN_ENC_SET_ALARM));
     delay(1);  
   }
   display.displayOff();

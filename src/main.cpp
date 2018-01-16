@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "Bounce2.h"      // for button debouncing
 #include <Wire.h>         // i2c library
-#include <Time.h>      // Time library - this is a clock after all!
+#include <Time.h>         // Time library - this is a clock after all!
 #include <Timelib.h>
 #include "Timezone.h"
 #include <WiFi.h>         // Library used primarily for getting the time from the internet
@@ -18,33 +18,37 @@
 void setup() {
   pinMode(2, OUTPUT);
   pinMode(BTN_ENC_SET_ALARM, INPUT);
+  alarmtoggleDebouncer.attach(BTN_ENC_SET_ALARM);
+  alarmtoggleDebouncer.interval(15); // interval in ms
 
   Serial.begin(115200);
   Serial.println();
   Serial.println("Setting up...");
   
-displayInit();
-rtcInit();
-//toggleAlarmSet();
-getAlarmSettings();
+  displayInit();
+  rtcInit();
+  getAlarmSettings();
+  digitalWrite(2, isAlarmSet);
 
-//get_Time();
-  //rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
-//get_Time();
-
-
-  //DateTime TimeNow = rtc.now();
-  //drawTime(TimeNow.hour(),TimeNow.minute());
-  
-
-
-  //Print the wakeup reason for ESP32 and touchpad too
   print_wakeup_reason();
   print_wakeup_touchpad();
 
-  touchAttachInterrupt(T3, callback, Threshold);  //Setup interrupt on Touch Pad 3 (GPIO15)
-  touchAttachInterrupt(T0, callback, Threshold);  //Setup interrupt on Touch Pad 3 (GPIO4)
-  esp_sleep_enable_touchpad_wakeup();             //Configure Touchpad as wakeup source
+  unsigned long starttime, endtime;
+  starttime = millis();
+  endtime = starttime;
+
+  //for (int i=0; i<=1000; i++){
+  while ((endtime - starttime) <=2000) { // do this loop for up to 1000mS
+    showTime();
+    alarmtoggleDebouncer.update();
+    if (alarmtoggleDebouncer.rose()) {
+      toggleAlarmSet();
+      digitalWrite(2, isAlarmSet);
+      starttime = millis();
+      endtime = starttime;
+    }
+    endtime = millis();
+  }
 
   if (isAlarmSet){
     uint32_t secsToSleep = secsTillAlarm(rtc.now());
@@ -58,16 +62,11 @@ getAlarmSettings();
   else {
     Serial.println("Will sleep until interrupted by touch or alarm setting...");
   }
-
-  for (int i=0; i<=2000; i++){
-    Serial.print("Button state: ");
-    Serial.println(digitalRead(BTN_ENC_SET_ALARM));
-    digitalWrite(2, digitalRead(BTN_ENC_SET_ALARM));
-    delay(1);  
-  }
+  touchAttachInterrupt(T3, callback, Threshold);  //Setup interrupt on Touch Pad 3 (GPIO15)
+  touchAttachInterrupt(T0, callback, Threshold);  //Setup interrupt on Touch Pad 0 (GPIO4)
+  esp_sleep_enable_touchpad_wakeup();             //Configure Touchpad as wakeup source  
   display.displayOff();
-  //Go to sleep now
-  Serial.println("Going to sleep now");
+  Serial.println("Going to sleep now");           //Go to sleep now
   esp_deep_sleep_start();
 }
 

@@ -121,9 +121,9 @@ void get_Time(){
 
 void showTime () {
   rtcTime = rtc.now(); // Get the time from the RTC module
-  Serial.print(String(rtcTime.hour()));
-  Serial.print(":");
-  Serial.println(String(rtcTime.minute()));
+  //Serial.print(String(rtcTime.hour()));
+  //Serial.print(":");
+  //Serial.println(String(rtcTime.minute()));
   drawTime(rtcTime.hour(),rtcTime.minute());
 }
 

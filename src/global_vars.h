@@ -32,3 +32,7 @@ bool isAlarmSet;
 int hourAlarm;
 int minAlarm;
 int secAlarm;
+Bounce encoderbtnDebouncer = Bounce(); 
+Bounce encodercwDebouncer = Bounce(); 
+Bounce encoderccwDebouncer = Bounce();
+Bounce alarmtoggleDebouncer = Bounce();

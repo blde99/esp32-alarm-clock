@@ -83,10 +83,22 @@ void drawTime(int hourtoPrint, int mintoPrint) {
     display.display();
 }
 
-void drawImageDemo() {
+void drawWiFiImage() {
     // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
     // on how to create xbm files
     display.drawXbm(34, 14, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
+}
+
+void drawAlarmOnImage() {
+    // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
+    // on how to create xbm files
+    display.drawXbm(40, 8, alarm_on_width, alarm_on_height, alarm_on_bits);
+}
+
+void drawAlarmOffImage() {
+    // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
+    // on how to create xbm files
+    display.drawXbm(40, 8, alarm_off_width, alarm_off_height, alarm_off_bits);
 }
 
 void get_Time(){
@@ -100,7 +112,7 @@ void get_Time(){
   Serial.print(ssid);
 
   WiFi.begin(ssid.c_str(), password.c_str());
-  drawImageDemo();
+  drawWiFiImage();
   display.display();
   while ((WiFi.status() != WL_CONNECTED) && (counter <= 10)) {
     delay(500);
@@ -140,12 +152,18 @@ void toggleAlarmSet () {
   if (isAlarmSet) {
     Serial.println("Alarm is SET!");
     // display.drawString(64, 10, "SET!");
-    // display.display();
+    display.clear();
+    drawAlarmOnImage();
+    display.display();
+    delay(1000);
   }
   else {
     Serial.println("Alarm is NOT SET!");
     // display.drawString(64, 10, "NOT SET!");
-    // display.display();
+    display.clear();
+    drawAlarmOffImage();
+    display.display();
+    delay(1000);
   }
 }
 

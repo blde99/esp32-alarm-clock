@@ -19,7 +19,7 @@ void setup() {
   pinMode(2, OUTPUT);
   pinMode(BTN_ENC_SET_ALARM, INPUT);
   alarmtoggleDebouncer.attach(BTN_ENC_SET_ALARM);
-  alarmtoggleDebouncer.interval(15); // interval in ms
+  alarmtoggleDebouncer.interval(10); // interval in ms
 
   Serial.begin(115200);
   Serial.println();
@@ -70,6 +70,4 @@ void setup() {
   esp_deep_sleep_start();
 }
 
-void loop() {
-
-}
+void loop() {}

@@ -150,6 +150,7 @@ void toggleAlarmSet () {
   display.setTextAlignment(TEXT_ALIGN_CENTER);
   display.setFont(ArialMT_Plain_24);
   if (isAlarmSet) {
+    digitalWrite(2, isAlarmSet);
     Serial.println("Alarm is SET!");
     // display.drawString(64, 10, "SET!");
     display.clear();
@@ -158,6 +159,7 @@ void toggleAlarmSet () {
     delay(1000);
   }
   else {
+    digitalWrite(2, isAlarmSet);
     Serial.println("Alarm is NOT SET!");
     // display.drawString(64, 10, "NOT SET!");
     display.clear();

@@ -20,6 +20,7 @@ void setup() {
   pinMode(BTN_ENC_SET_ALARM, INPUT);
   alarmtoggleDebouncer.attach(BTN_ENC_SET_ALARM);
   alarmtoggleDebouncer.interval(10); // interval in ms
+  alarmtoggleDebouncer.update();
 
   Serial.begin(115200);
   Serial.println();

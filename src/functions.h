@@ -76,6 +76,12 @@ void drawTime(int hourtoPrint, int mintoPrint) {
     // Font Demo1
     // create more fonts at http://oleddisplay.squix.ch/
     display.clear();
+    
+    if (isAlarmSet){
+      Serial.println("Showing small alarm icon...");
+      display.drawXbm(110, 0, alarm_on_small_width, alarm_on_small_height, alarm_on_small_bits);
+    }
+    
     String timeToDraw = String(twoDigits(hourtoPrint)) + ":" + String(twoDigits(mintoPrint));
     display.setTextAlignment(TEXT_ALIGN_CENTER);
     display.setFont(DejaVu_Sans_40);

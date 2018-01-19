@@ -19,7 +19,7 @@ void setup() {
   pinMode(2, OUTPUT);
   pinMode(BTN_ENC_SET_ALARM, INPUT_PULLUP);
   alarmtoggleDebouncer.attach(BTN_ENC_SET_ALARM);
-  alarmtoggleDebouncer.interval(10); // interval in ms
+  alarmtoggleDebouncer.interval(5); // interval in ms
   alarmtoggleDebouncer.update();
 
   Serial.begin(115200);
@@ -39,7 +39,7 @@ void setup() {
   endtime = starttime;
 
   //for (int i=0; i<=1000; i++){
-  while ((endtime - starttime) <=2000) { // do this loop for up to 1000mS
+  while ((endtime - starttime) <=5000) { // do this loop for up to 1000mS
     showTime();
     alarmtoggleDebouncer.update();
     if (alarmtoggleDebouncer.rose()) {

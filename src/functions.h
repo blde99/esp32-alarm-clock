@@ -162,7 +162,7 @@ void toggleAlarmSet () {
     display.clear();
     drawAlarmOnImage();
     display.display();
-    delay(1000);
+    delay(500);
   }
   else {
     digitalWrite(2, isAlarmSet);
@@ -171,7 +171,7 @@ void toggleAlarmSet () {
     display.clear();
     drawAlarmOffImage();
     display.display();
-    delay(1000);
+    delay(500);
   }
 }
 

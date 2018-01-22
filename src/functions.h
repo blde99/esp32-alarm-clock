@@ -227,14 +227,16 @@ void setAlarm () {
     drawTime(hourAlarm,minAlarm);
 
     if (encodercwDebouncer.fell()) {
-      Serial.println("Knob turned CW");      
+      Serial.println("Knob turned CW"); 
+      delay(50);     
     }
     else if (encoderccwDebouncer.fell()) {
       Serial.println("Knob turned CCW");
+      delay(50);
     }
     if (encoderbtnDebouncer.rose()) {
       alarmSetComplete = true;
     }
-    delay(20);
+    
   }
 }

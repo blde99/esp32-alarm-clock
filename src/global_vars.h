@@ -4,6 +4,9 @@
 // const int SleepTime = TIME_TO_SLEEP * uS_TO_s_FACTOR; // SleepTime will is 5 Seconds
 #define DISPLAY_ON_DURATION 2000
 #define BTN_TOGGLE_ALARM 23
+#define ENCODER_BTN_SET_ALARM 34
+#define ENCODER_CW_SET_ALARM 33
+#define ENCODER_CCW_SET_ALARM 32
 
 
 // Definitions for touchpad wake up

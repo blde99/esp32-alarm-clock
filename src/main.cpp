@@ -18,9 +18,21 @@
 void setup() {
   pinMode(2, OUTPUT);
   pinMode(BTN_TOGGLE_ALARM, INPUT_PULLUP);
+  pinMode(ENCODER_BTN_SET_ALARM, INPUT_PULLUP);
+  pinMode(ENCODER_CW_SET_ALARM, INPUT_PULLUP);
+  pinMode(ENCODER_CCW_SET_ALARM, INPUT_PULLUP);
   alarmtoggleDebouncer.attach(BTN_TOGGLE_ALARM);
   alarmtoggleDebouncer.interval(5); // interval in ms
   alarmtoggleDebouncer.update();
+  encoderbtnDebouncer.attach(ENCODER_BTN_SET_ALARM);
+  encoderbtnDebouncer.interval(5);
+  encoderbtnDebouncer.update();
+  encodercwDebouncer.attach(ENCODER_CW_SET_ALARM);
+  encodercwDebouncer.interval(10);
+  encodercwDebouncer.update();
+  encoderccwDebouncer.attach(ENCODER_CCW_SET_ALARM);
+  encoderccwDebouncer.interval(20);
+  encoderccwDebouncer.update();
 
   Serial.begin(115200);
   Serial.println();
@@ -42,6 +54,14 @@ void setup() {
   while ((endtime - starttime) <=5000) { // do this loop for up to 1000mS
     showTime();
     alarmtoggleDebouncer.update();
+    encoderbtnDebouncer.update();
+    if (encoderbtnDebouncer.rose()) {
+      Serial.println("Saw ENCODER button press");
+      setAlarm();
+      starttime = millis();
+      endtime = starttime;      
+    }
+
     if (alarmtoggleDebouncer.rose()) {
       toggleAlarmSet();
       digitalWrite(2, isAlarmSet);

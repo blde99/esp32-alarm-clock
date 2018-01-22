@@ -78,7 +78,6 @@ void drawTime(int hourtoPrint, int mintoPrint) {
     display.clear();
     
     if (isAlarmSet){
-      Serial.println("Showing small alarm icon...");
       display.drawXbm(110, 0, alarm_on_small_width, alarm_on_small_height, alarm_on_small_bits);
     }
     
@@ -215,5 +214,27 @@ void print_wakeup_touchpad(){
     case 8  : Serial.println("Touch detected on GPIO 33"); break;
     case 9  : Serial.println("Touch detected on GPIO 32"); break;
     default : Serial.println("Wakeup not by touchpad"); break;
+  }
+}
+
+void setAlarm () {
+  bool alarmSetComplete = false;
+
+  while (!alarmSetComplete) {
+    encoderbtnDebouncer.update();
+    encodercwDebouncer.update();
+    encoderccwDebouncer.update();
+    drawTime(hourAlarm,minAlarm);
+
+    if (encodercwDebouncer.fell()) {
+      Serial.println("Knob turned CW");      
+    }
+    else if (encoderccwDebouncer.fell()) {
+      Serial.println("Knob turned CCW");
+    }
+    if (encoderbtnDebouncer.rose()) {
+      alarmSetComplete = true;
+    }
+    delay(20);
   }
 }

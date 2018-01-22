@@ -17,8 +17,8 @@
 
 void setup() {
   pinMode(2, OUTPUT);
-  pinMode(BTN_ENC_SET_ALARM, INPUT_PULLUP);
-  alarmtoggleDebouncer.attach(BTN_ENC_SET_ALARM);
+  pinMode(BTN_TOGGLE_ALARM, INPUT_PULLUP);
+  alarmtoggleDebouncer.attach(BTN_TOGGLE_ALARM);
   alarmtoggleDebouncer.interval(5); // interval in ms
   alarmtoggleDebouncer.update();
 

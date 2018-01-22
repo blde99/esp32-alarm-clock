@@ -219,6 +219,7 @@ void print_wakeup_touchpad(){
 
 void setAlarm () {
   bool alarmSetComplete = false;
+  int step = 0;
 
   while (!alarmSetComplete) {
     encoderbtnDebouncer.update();
@@ -227,13 +228,18 @@ void setAlarm () {
     drawTime(hourAlarm,minAlarm);
 
     if (encodercwDebouncer.fell()) {
-      Serial.println("Knob turned CW"); 
+      Serial.println("Knob turned CW");
+      step++; 
       delay(50);     
     }
-    else if (encoderccwDebouncer.fell()) {
+    if (encoderccwDebouncer.fell()) {
       Serial.println("Knob turned CCW");
+      step--;
       delay(50);
     }
+    //Serial.print("Step: ");
+    //Serial.println(step);
+
     if (encoderbtnDebouncer.rose()) {
       alarmSetComplete = true;
     }

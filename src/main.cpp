@@ -19,8 +19,8 @@ void setup() {
   pinMode(2, OUTPUT);
   pinMode(BTN_TOGGLE_ALARM, INPUT_PULLUP);
   pinMode(ENCODER_BTN_SET_ALARM, INPUT_PULLUP);
-  pinMode(ENCODER_CW_SET_ALARM, INPUT_PULLUP);
-  pinMode(ENCODER_CCW_SET_ALARM, INPUT_PULLUP);
+  pinMode(ENCODER_CW_SET_ALARM, INPUT);
+  pinMode(ENCODER_CCW_SET_ALARM, INPUT);
   alarmtoggleDebouncer.attach(BTN_TOGGLE_ALARM);
   alarmtoggleDebouncer.interval(5); // interval in ms
   alarmtoggleDebouncer.update();
@@ -28,10 +28,10 @@ void setup() {
   encoderbtnDebouncer.interval(5);
   encoderbtnDebouncer.update();
   encodercwDebouncer.attach(ENCODER_CW_SET_ALARM);
-  encodercwDebouncer.interval(10);
+  encodercwDebouncer.interval(5);
   encodercwDebouncer.update();
   encoderccwDebouncer.attach(ENCODER_CCW_SET_ALARM);
-  encoderccwDebouncer.interval(20);
+  encoderccwDebouncer.interval(5);
   encoderccwDebouncer.update();
 
   Serial.begin(115200);

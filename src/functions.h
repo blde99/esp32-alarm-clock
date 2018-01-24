@@ -72,13 +72,16 @@ time_t printLocalTime()
     return timeSinceEpoch;
 }
 
-void drawTime(int hourtoPrint, int mintoPrint) {
+void drawTime(int hourtoPrint, int mintoPrint, bool alarmSetMode = false) {
     // Font Demo1
     // create more fonts at http://oleddisplay.squix.ch/
     display.clear();
     
     if (isAlarmSet){
       display.drawXbm(110, 0, alarm_on_small_width, alarm_on_small_height, alarm_on_small_bits);
+    }
+    if (alarmSetMode) {
+      display.drawXbm(0, 0, cog_small_width, cog_small_height, cog_small_bits);
     }
     
     String timeToDraw = String(twoDigits(hourtoPrint)) + ":" + String(twoDigits(mintoPrint));
@@ -220,7 +223,7 @@ void setAlarm () {
 
   while (!alarmSetComplete) {
     encoder.service();
-    drawTime(hourAlarm,minAlarm);
+    drawTime(hourAlarm, minAlarm, true);
 
     encoderButtonState = encoder.getButton();
     if (encoderButtonState == ClickEncoder::Clicked) { setFunction++; }

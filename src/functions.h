@@ -111,8 +111,8 @@ void drawAlarmOffImage() {
 
 void get_Time(){
   preferences.begin("alarmclock", false);
-  ssid = preferences.getString("ssid-work");
-  password = preferences.getString("password-work");
+  ssid = preferences.getString("ssid-home");
+  password = preferences.getString("password-home");
   preferences.end();
   
   int counter = 0;

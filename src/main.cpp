@@ -6,7 +6,7 @@
 #include "Timezone.h"
 #include <WiFi.h>         // Library used primarily for getting the time from the internet
 #include <Preferences.h>  // Library for storing data that needs to survive a reboot
-#include <ClickEncoder.h>
+#include "ClickEncoder.h"
 
 // Includes for OLED screen
 #include "images.h"       // Include file containing custom images for OLED screen
@@ -57,13 +57,13 @@ void setup() {
     //   Serial.print("Button: "); Serial.println(encoderButtonState);
     // }
     switch (encoderButtonState) {
-      case ClickEncoder::Held:          //3
+      case ClickEncoder::Clicked:          //5
         toggleAlarmSet();
         starttime = millis();
         endtime = starttime;  
         break;
 
-      case ClickEncoder::Clicked:       //5
+      case ClickEncoder::Held:       //5
         setAlarm();
         starttime = millis();
         endtime = starttime;          

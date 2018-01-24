@@ -6,6 +6,7 @@
 #include "Timezone.h"
 #include <WiFi.h>         // Library used primarily for getting the time from the internet
 #include <Preferences.h>  // Library for storing data that needs to survive a reboot
+#include <ClickEncoder.h>
 
 // Includes for OLED screen
 #include "images.h"       // Include file containing custom images for OLED screen
@@ -17,34 +18,30 @@
 
 void setup() {
   pinMode(2, OUTPUT);
-  pinMode(BTN_TOGGLE_ALARM, INPUT_PULLUP);
   pinMode(ENCODER_BTN_SET_ALARM, INPUT_PULLUP);
   pinMode(ENCODER_CW_SET_ALARM, INPUT);
   pinMode(ENCODER_CCW_SET_ALARM, INPUT);
-  alarmtoggleDebouncer.attach(BTN_TOGGLE_ALARM);
-  alarmtoggleDebouncer.interval(5); // interval in ms
-  alarmtoggleDebouncer.update();
-  encoderbtnDebouncer.attach(ENCODER_BTN_SET_ALARM);
-  encoderbtnDebouncer.interval(5);
-  encoderbtnDebouncer.update();
-  encodercwDebouncer.attach(ENCODER_CW_SET_ALARM);
-  encodercwDebouncer.interval(5);
-  encodercwDebouncer.update();
-  encoderccwDebouncer.attach(ENCODER_CCW_SET_ALARM);
-  encoderccwDebouncer.interval(5);
-  encoderccwDebouncer.update();
+  encoder.setAccelerationEnabled(true);
+
+  oldEncoderPosition = -1;
 
   Serial.begin(115200);
   Serial.println();
   Serial.println("Setting up...");
-  
+  Serial.print("Encoder acceleration is ");
+  Serial.println((encoder.getAccelerationEnabled()) ? "enabled" : "disabled");
+
   displayInit();
   rtcInit();
   getAlarmSettings();
-  digitalWrite(2, isAlarmSet);
+  //digitalWrite(2, isAlarmSet);
 
-  print_wakeup_reason();
-  print_wakeup_touchpad();
+  //print_wakeup_reason();
+  //print_wakeup_touchpad();
+  switch (print_wakeup_reason()) { 
+    case 3: break; // We will add a check time loop in prep for the alarm being triggered because we were woken by timer.
+    case 4: showTime(); break; // We were woken by touchpad
+  }
 
   unsigned long starttime, endtime;
   starttime = millis();
@@ -52,22 +49,32 @@ void setup() {
 
   //for (int i=0; i<=1000; i++){
   while ((endtime - starttime) <=5000) { // do this loop for up to 1000mS
+    encoder.service();
     showTime();
-    alarmtoggleDebouncer.update();
-    encoderbtnDebouncer.update();
-    if (encoderbtnDebouncer.rose()) {
-      Serial.println("Saw ENCODER button press");
-      setAlarm();
-      starttime = millis();
-      endtime = starttime;      
+
+    encoderButtonState = encoder.getButton();
+    // if (encoderButtonState != 0){
+    //   Serial.print("Button: "); Serial.println(encoderButtonState);
+    // }
+    switch (encoderButtonState) {
+      case ClickEncoder::Held:          //3
+        toggleAlarmSet();
+        starttime = millis();
+        endtime = starttime;  
+        break;
+
+      case ClickEncoder::Clicked:       //5
+        setAlarm();
+        starttime = millis();
+        endtime = starttime;          
+        break;
+      case ClickEncoder::DoubleClicked:  //6
+        get_Time();
+        starttime = millis();
+        endtime = starttime;        
+        break;
     }
 
-    if (alarmtoggleDebouncer.rose()) {
-      toggleAlarmSet();
-      digitalWrite(2, isAlarmSet);
-      starttime = millis();
-      endtime = starttime;
-    }
     endtime = millis();
   }
 
@@ -83,8 +90,7 @@ void setup() {
   else {
     Serial.println("Will sleep until interrupted by touch or alarm setting...");
   }
-  touchAttachInterrupt(T3, callback, Threshold);  //Setup interrupt on Touch Pad 3 (GPIO15)
-  touchAttachInterrupt(T0, callback, Threshold);  //Setup interrupt on Touch Pad 0 (GPIO4)
+  touchAttachInterrupt(T3, callback, TOUCHPIN_SENSITIVITY_THRESHOLD);  //Setup interrupt on Touch Pad 3 (GPIO15)
   esp_sleep_enable_touchpad_wakeup();             //Configure Touchpad as wakeup source  
   display.displayOff();
   Serial.println("Going to sleep now");           //Go to sleep now

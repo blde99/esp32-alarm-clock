@@ -3,14 +3,17 @@
 // #define TIME_TO_SLEEP 120        // Time ESP32 will go to sleep (in minutes)
 // const int SleepTime = TIME_TO_SLEEP * uS_TO_s_FACTOR; // SleepTime will is 5 Seconds
 #define DISPLAY_ON_DURATION 2000
-#define BTN_TOGGLE_ALARM 23
 #define ENCODER_BTN_SET_ALARM 34
 #define ENCODER_CW_SET_ALARM 33
 #define ENCODER_CCW_SET_ALARM 32
+#define ENCODER_STEPS 4
+
+int16_t oldEncoderPosition, encoderPosition;
+uint8_t encoderButtonState;
 
 
 // Definitions for touchpad wake up
-#define Threshold 40 /* Greater the value, more the sensitivity */
+#define TOUCHPIN_SENSITIVITY_THRESHOLD 40 /* Greater the value, more the sensitivity */
 touch_pad_t touchPin;
 
 const char* ntpServerName = "uk.pool.ntp.org";
@@ -35,7 +38,4 @@ bool isAlarmSet;
 int hourAlarm;
 int minAlarm;
 int secAlarm;
-Bounce encoderbtnDebouncer = Bounce(); 
-Bounce encodercwDebouncer = Bounce(); 
-Bounce encoderccwDebouncer = Bounce();
-Bounce alarmtoggleDebouncer = Bounce();
+ClickEncoder encoder(ENCODER_CCW_SET_ALARM, ENCODER_CW_SET_ALARM, ENCODER_BTN_SET_ALARM, ENCODER_STEPS);

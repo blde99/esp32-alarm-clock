@@ -36,8 +36,6 @@ void setup() {
   Serial.println("Getting alarm settings"); getAlarmSettings();
   //digitalWrite(2, isAlarmSet);
 
-  //print_wakeup_reason();
-  //print_wakeup_touchpad();
   switch (print_wakeup_reason()) { 
     case 3: break; // We will add a check time loop in prep for the alarm being triggered because we were woken by timer.
     case 4: showTime(); break; // We were woken by touchpad

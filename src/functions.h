@@ -257,6 +257,11 @@ void toggleAlarmSet () {
   }
 }
 
+// Function to get the reason for esp32 wakeup
+// Parameters:
+// none
+// Returns:
+// an integer in the range 1..5 - we are only interested in 3 & 4 (Timer and Touchpad)
 int print_wakeup_reason(){
   esp_sleep_wakeup_cause_t wakeup_reason;
 
@@ -273,69 +278,50 @@ int print_wakeup_reason(){
   }
 }
 
+// dummy callback function for ESP32 deepsleep wakeup
 void callback(){}
-                
-/*
-Method to print the touchpad by which ESP32
-has been awaken from sleep
-*/
-void print_wakeup_touchpad(){
-  
-  touch_pad_t pin;
-  touchPin = esp_sleep_get_touchpad_wakeup_status();
 
-  switch(touchPin)
-  {
-    // case 0  : Serial.println("Touch detected on GPIO 4"); break;
-    // case 1  : Serial.println("Touch detected on GPIO 0"); break;
-    // case 2  : Serial.println("Touch detected on GPIO 2"); break;
-    case 3  : Serial.println("Touch detected on GPIO 15"); showTime(); break;
-    // case 4  : Serial.println("Touch detected on GPIO 13"); break;
-    // case 5  : Serial.println("Touch detected on GPIO 12"); break;
-    // case 6  : Serial.println("Touch detected on GPIO 14"); break;
-    // case 7  : Serial.println("Touch detected on GPIO 27"); break;
-    // case 8  : Serial.println("Touch detected on GPIO 33"); break;
-    // case 9  : Serial.println("Touch detected on GPIO 32"); break;
-    default : Serial.println("Wakeup not by touchpad"); break;
-  }
-}
-
+// Function to set the alarm time
+// Parameters:
+// none
+// Returns:
+// none
 void setAlarm () {
-  bool alarmSetComplete = false;
-  int setFunction = 0;
+  bool alarmSetComplete = false;                                            // Create vaiable used to trap us into a loop
+  int setFunction = 0;                                                      // setFunction will be 0, 1 or 2 (Hours, minutes, finished)
 
-  while (!alarmSetComplete) {
-    encoder.service();
-    drawTime(hourAlarm, minAlarm, true);
+  while (!alarmSetComplete) {                                               
+    encoder.service();                                                      // Get values from the rotary encoder
+    drawTime(hourAlarm, minAlarm, true);                                    // Update the alarm time on the OLED display
 
-    encoderButtonState = encoder.getButton();
-    if (encoderButtonState == ClickEncoder::Clicked) { setFunction++; }
+    encoderButtonState = encoder.getButton();                               // Get the rotary encoder button status
+    if (encoderButtonState == ClickEncoder::Clicked) { setFunction++; }     // If the button was clicked, start the next function
     switch (setFunction) {
-      case 0:
-        hourAlarm += encoder.getValue();
-        if (hourAlarm > 23) {
-          hourAlarm = 0;
+      case 0:                                                               // If setFunction is 0, we are setting the hour for the alarm
+        hourAlarm += encoder.getValue();                                    // Update the "hourAlarm" variable by incrementing or decrementing from encoder
+        if (hourAlarm > 23) {                                               // If "hourAlarm" is 24 or more...
+          hourAlarm = 0;                                                    // ...set "hourAlarm" to 0 to start again
         }
-        if (hourAlarm < 0) {
-          hourAlarm = 23;
+        if (hourAlarm < 0) {                                                // If "hourAlarm" is -1 or less...
+          hourAlarm = 23;                                                   // ...set "hourAlarm" to 24 to start again
         }        
         break;
-      case 1:
-        minAlarm += encoder.getValue();
-        if (minAlarm > 59) {
-          minAlarm = 0;
+      case 1:                                                               // If setFunction is 0, we are setting the minute for the alarm
+        minAlarm += encoder.getValue();                                     // Update the "minAlarm" variable by incrementing or decrementing from encoder
+        if (minAlarm > 59) {                                                // If "minAlarm" is 60 or more...
+          minAlarm = 0;                                                     // ...set "hourAlarm" to 0 to start again
         }
-        if (minAlarm < 0) {
-          minAlarm = 59;
+        if (minAlarm < 0) {                                                 // If "minAlarm" is -1 or less...
+          minAlarm = 59;                                                    // ...set "minAlarm" to 59 to start again
         }
         break;
-      case 2:
-        preferences.begin("alarmclock", false);
-        preferences.putUInt("hourAlarm", hourAlarm);
-        preferences.putUInt("minAlarm", minAlarm);
-        preferences.putUInt("secAlarm", 0);
-        preferences.end();
-        alarmSetComplete = true;
+      case 2:                                                               // If setFunction is 0, we have finished setting the alarm
+        preferences.begin("alarmclock", false);                             // Open preferences
+        preferences.putUInt("hourAlarm", hourAlarm);                        // Write the hour value to the preferences
+        preferences.putUInt("minAlarm", minAlarm);                          // Write the minute value to the preferences
+        preferences.putUInt("secAlarm", 0);                                 // Write the seconds value to the preferences
+        preferences.end();                                                  // Close perefernces
+        alarmSetComplete = true;                                            // Set "alarmSetComplete" to true to break out of the loop
         break;
     }
   }

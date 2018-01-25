@@ -31,9 +31,9 @@ void setup() {
   Serial.print("Encoder acceleration is ");
   Serial.println((encoder.getAccelerationEnabled()) ? "enabled" : "disabled");
 
-  displayInit();
-  rtcInit();
-  getAlarmSettings();
+  Serial.println("Init Display"); displayInit();
+  Serial.println("Init RTC"); rtcInit();
+  Serial.println("Getting alarm settings"); getAlarmSettings();
   //digitalWrite(2, isAlarmSet);
 
   //print_wakeup_reason();

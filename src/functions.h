@@ -1,175 +1,258 @@
+// Function to get the Alarm settings from non-volatile memory
+// Parameters:
+// None
+// Returns:
+// None
 void getAlarmSettings () {
-  Serial.println("Getting alarm settings");
-  preferences.begin("alarmclock", false);
-  // preferences.putUInt("hourAlarm", 15);
-  // preferences.putUInt("minAlarm", 0);
-  // preferences.putUInt("secAlarm", 0);
-  isAlarmSet = preferences.getBool("alarmSet");
-  hourAlarm = preferences.getUInt("hourAlarm", 0);
-  minAlarm = preferences.getUInt("minAlarm", 0);
-  secAlarm = preferences.getUInt("secAlarm", 0);
-  preferences.end();
-}
-void displayInit () {
-  Serial.println("Init display...");
-  //Initialize display
-  display.init();
-  display.flipScreenVertically();
-  display.setContrast(0);
+  preferences.begin("alarmclock", false);           // Open preferences
+  isAlarmSet = preferences.getBool("alarmSet");     // Get alarm set status
+  hourAlarm = preferences.getUInt("hourAlarm", 0);  // Get alarm hour and place in a global variable
+  minAlarm = preferences.getUInt("minAlarm", 0);    // Get alarm minute and place in a global variable
+  secAlarm = preferences.getUInt("secAlarm", 0);    // Get alarm second and place in a global variable (this will always be zero)
+  preferences.end();                                // Close preferences
 }
 
+// Function to initialise the OLED display
+// Parameters:
+// None
+// Returns:
+// None
+void displayInit () {
+  display.init();                                   // Initialise the display
+  display.flipScreenVertically();                   // Flip the display 180 degrees
+  display.setContrast(0);                           // Set a really low contrast
+}
+
+// Function to initialise the DS1307 RTC module
+// Parameters:
+// None
+// Returns:
+// None
 void rtcInit () {
-  Serial.println("Init RTC...");
   if (!rtc.begin()) {
-    Serial.println("Couldn't find RTC module!");
-  while (1);
+    Serial.println("Couldn't find RTC module!");    // Print fail message if RTC can't be found
+  while (1);                                        // Loop forever
   }
   if (!rtc.isrunning()) {
-  Serial.println("RTC module is not running!");
-    // following line sets the RTC to the date & time this sketch was compiled
-     //  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-    // This line sets the RTC with an explicit date & time, for example to set
-    // January 21, 2014 at 3am you would call:
+    Serial.println("RTC module is not running!");   // Print fail message if RTC can be found but the time is not set
   }
 }
 
+// Function to calculate the difference between the time now and the NEXT alarm
+// Parameters:
+// DateTime t - Intended to be the time now when passed in
+// Returns:
+// secondsTillAlarm - this is the amount of time in seconds between "t" and the NEXT alarm
 uint64_t secsTillAlarm(DateTime t) {
-  int secondsTillAlarm = 0;
+  int secondsTillAlarm = 0;                                             // Initialise the return variable
 
-  int hoursLeft = hourAlarm - t.hour();
-  if (hoursLeft < 0) { hoursLeft += 24; }
-  int minsLeft = minAlarm - t.minute();
-  if (minsLeft < 0) { minsLeft += 60; }
-  int secsLeft = secAlarm - t.second();
-  if (secsLeft < 0) { secsLeft += 60; }
+  int hoursLeft = hourAlarm - t.hour();                                 // Calculate the difference in hours between now and the alarm
+  if (hoursLeft < 0) { hoursLeft += 24; }                               // Add 24 hours if we are past the alarm hour
+  int minsLeft = minAlarm - t.minute();                                 // Calculate the difference in minutes between now and the alarm
+  if (minsLeft < 0) { minsLeft += 60; }                                 // Add 60 minutes if we are past the alarm minute
+  int secsLeft = secAlarm - t.second();                                 // Calculate the difference in seconds between now and the alarm
+  if (secsLeft < 0) { secsLeft += 60; }                                 // Add 60 seconds if we are past the alarm seconds
 
-  secondsTillAlarm = (hoursLeft * 3600) + (minsLeft * 60) + secsLeft;
+  secondsTillAlarm = (hoursLeft * 3600) + (minsLeft * 60) + secsLeft;   // Convert it all to seconds...
 
-  return secondsTillAlarm - 70;  
+  return secondsTillAlarm - 70;                                         // ... and return it
 }
 
 // utility function for digital clock display: prints leading 0
+// Parameters:
+// int digits - digit to be converted to string and if necessary add a leading 0
+// Returns:
+// paddedDigits - String to be printed.
 String twoDigits(int digits){
+  String paddedDigits;                                // Initialise the return variable
   if(digits < 10) {
-    String i = '0'+String(digits);
-    return i;
+    paddedDigits = '0'+String(digits);                // If the "digits" parameter is less then 10, add a "0" before the digit
   }
   else {
-    return String(digits);
+    paddedDigits = String(digits);                    // If the "digits" parameter is more than 10, return the orinal number as a string
   }
+  return paddedDigits;                                // Return the new string  
 }
 
+// Function to get local time
+// Parameters:
+// none
+// Returns:
+// timeSinceEpoch - Seconds since Epoch if successful
+// 0 - Returns this if failed
 time_t printLocalTime()
 {
-    struct tm timeinfo;
-    if(!getLocalTime(&timeinfo)){
-        Serial.println("Failed to obtain time");
-        return 0;
+    struct tm timeinfo;                               // Create struct to place time into
+    if(!getLocalTime(&timeinfo)){                     // Get the time and place it into the timeinfo variable
+        Serial.println("Failed to obtain time");      // Print to serial if we fail...
+        return 0;                                     // ...and return 0
     }
-    time_t timeSinceEpoch = mktime(&timeinfo);
-    Serial.print("Time since epoch: ");
-    Serial.println(timeSinceEpoch);
-    return timeSinceEpoch;
+    time_t timeSinceEpoch = mktime(&timeinfo);        // Convert timeinfo variable to epoch time and put into the "timeSinceEpoch" variable
+    return timeSinceEpoch;                            // Return the "timeSinceEpoch" variable
 }
 
+// Function to display the time/alarm on the OLED display
+// Parameters:
+// int hourtoPrint - The hour portion of the time.  This is use in conjunction with the twoDigits() function
+// int mintoPrint - The minute portion of the time.  This is use in conjunction with the twoDigits() function
+// bool alarmSetmode - If the alarm is being set, then this is "true" which in turn will draw the cog icon on the screen
+// Returns:
+// None
 void drawTime(int hourtoPrint, int mintoPrint, bool alarmSetMode = false) {
-    // Font Demo1
-    // create more fonts at http://oleddisplay.squix.ch/
-    display.clear();
+    display.clear();                                                                              // Clear the display
     
-    if (isAlarmSet){
-      display.drawXbm(110, 0, alarm_on_small_width, alarm_on_small_height, alarm_on_small_bits);
+    if (isAlarmSet){                                                                              // If the alarm is set...
+      display.drawXbm(110, 0, alarm_on_small_width, alarm_on_small_height, alarm_on_small_bits);  // ...display the alarm on icon top right of OLED
     }
-    if (alarmSetMode) {
-      display.drawXbm(0, 0, cog_small_width, cog_small_height, cog_small_bits);
+    if (alarmSetMode) {                                                                           // If we are setting the alarm time...
+      display.drawXbm(0, 0, cog_small_width, cog_small_height, cog_small_bits);                   // ...display the cog icon top right of OLED
     }
     
-    String timeToDraw = String(twoDigits(hourtoPrint)) + ":" + String(twoDigits(mintoPrint));
-    display.setTextAlignment(TEXT_ALIGN_CENTER);
-    display.setFont(DejaVu_Sans_40);
-    display.drawString(64, 10, timeToDraw);
-    display.display();
+    String timeToDraw = String(twoDigits(hourtoPrint)) + ":" + String(twoDigits(mintoPrint));     // Set the "timeToDraw" variable
+    display.setTextAlignment(TEXT_ALIGN_CENTER);                                                  // Align text to centre of the OLED display
+    display.setFont(DejaVu_Sans_40);                                                              // Set the font for the text
+    display.drawString(64, 10, timeToDraw);                                                       // Draw the time on the display
+    display.display(); 
 }
 
+// Function to draw the WiFi logo on the OLED display
+// Parameters:
+// none
+// Returns:
+// none
 void drawWiFiImage() {
     // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
     // on how to create xbm files
     display.drawXbm(34, 14, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
 }
 
+// Function to draw the Alarm on image on the OLED display when the alarm state is toggled
+// Parameters:
+// none
+// Returns:
+// none
 void drawAlarmOnImage() {
     // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
     // on how to create xbm files
     display.drawXbm(40, 8, alarm_on_width, alarm_on_height, alarm_on_bits);
 }
 
+// Function to draw the Alarm off image on the OLED display when the alarm state is toggled
+// Parameters:
+// none
+// Returns:
+// none
 void drawAlarmOffImage() {
     // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
     // on how to create xbm files
     display.drawXbm(40, 8, alarm_off_width, alarm_off_height, alarm_off_bits);
 }
 
-void get_Time(){
-  preferences.begin("alarmclock", false);
-  ssid = preferences.getString("ssid-home");
-  password = preferences.getString("password-home");
-  preferences.end();
-  
-  int counter = 0;
-  Serial.print("Connecting to ");
-  Serial.print(ssid);
+// Function to draw the error image on the OLED if the clock failed to set the time by NTP
+// Parameters:
+// none
+// Returns:
+// none
+void drawErrorImage() {
+    // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
+    // on how to create xbm files
+    display.clear();
+    display.drawXbm(40, 8, error_width, error_height, error_bits);
+    display.display();
+}
 
-  WiFi.begin(ssid.c_str(), password.c_str());
-  display.clear();
-  drawWiFiImage();
-  display.display();
-  while ((WiFi.status() != WL_CONNECTED) && (counter <= 10)) {
-    delay(500);
+// Function to draw the success image on the OLED if the clock succeeded in setting the time by NTP
+// Parameters:
+// none
+// Returns:
+// none
+void drawSuccessImage() {
+    // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
+    // on how to create xbm files
+    display.clear();
+    display.drawXbm(40, 8, success_width, success_height, success_bits);
+    display.display();
+}
+
+// Function to connect and get the time over WiFi
+// Parameters:
+// none
+// Returns:
+// none
+void get_Time(){
+  time_t returnedTime;                                            // Variable the is filled by the printLocalTime() function
+
+  preferences.begin("alarmclock", false);                         // Open preferences
+  ssid = preferences.getString("ssid-work");                      // Get the WiFi SSID stored previously
+  password = preferences.getString("password-work");              // Get the WiFi password stored previously
+  preferences.end();                                              // Close preferences
+  
+  int counter = 0;                                                // Initialise a counter
+  Serial.print("Connecting to ");                                 // Debug
+  Serial.print(ssid);                                             // Debug
+
+  WiFi.begin(ssid.c_str(), password.c_str());                     // Connect to WiFi using the details gathered earlier
+  display.clear();                                                // Clear the OLED display
+  drawWiFiImage();                                                // Show the WiFi logo to indicate we are trying to connect to WiFi
+  display.display();                                              // Update the OLED display
+  while ((WiFi.status() != WL_CONNECTED) && (counter <= 10)) {    // If we haven't connected to WiFi yet...
+    delay(500);                                                   // Show dots in the Serial monitor for 5 secs
     Serial.print(".");
     counter++;
   }
-  if(WiFi.status() == WL_CONNECTED) {
+  if(WiFi.status() == WL_CONNECTED) {                             // If we successfully connect to WiFi
     Serial.println("Connected!");
-    configTime(0, 0, ntpServerName);
-    //setTime(printLocalTime());
-    rtc.adjust(printLocalTime());
-    //Serial.println(DateTime(printLocalTime())):
+    configTime(0, 0, ntpServerName);                              // Set the GMT offset, daylight savings and NTP server
+    returnedTime = printLocalTime();                              // Get the time and fill the "returnedTime" variable
+    if (returnedTime != 0) {                                      // If we were successful getting the time...
+      rtc.adjust(returnedTime);                                   // ...set the DS1307 RTC module
+      drawSuccessImage();                                         // Draw the success icon on the OLED display
+      delay(500); 
+    }
+    else {
+      drawErrorImage();                                           // If we failed to get the time, draw the error icon on the OLED display
+      delay(500);      
+    }
   }
   else {
-    Serial.println("Failed to connect!");
-  }
-}
-
-void showTime () {
-  rtcTime = rtc.now(); // Get the time from the RTC module
-  //Serial.print(String(rtcTime.hour()));
-  //Serial.print(":");
-  //Serial.println(String(rtcTime.minute()));
-  drawTime(rtcTime.hour(),rtcTime.minute());
-}
-
-void toggleAlarmSet () {
-  preferences.begin("alarmclock", false);
-  //preferences.putBool("alarmSet", true);
-  preferences.putBool("alarmSet", !preferences.getBool("alarmSet", true));
-  isAlarmSet = preferences.getBool("alarmSet");
-  preferences.end();
-  
-  display.clear();
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
-  display.setFont(ArialMT_Plain_24);
-  if (isAlarmSet) {
-    Serial.println("Alarm is SET!");
-    display.clear();
-    drawAlarmOnImage();
-    display.display();
+    Serial.println("Failed to connect!");                         // If we failed to connect to WiFi, draw the error icon on the OLED display
+    drawErrorImage();
     delay(500);
   }
-  else {
-    Serial.println("Alarm is NOT SET!");
-    display.clear();
-    drawAlarmOffImage();
-    display.display();
+}
+
+// Function to show the time on the OLED display
+// Parameters:
+// none
+// Returns:
+// none
+void showTime () {
+  rtcTime = rtc.now();                        // Get the time from the RTC module
+  drawTime(rtcTime.hour(),rtcTime.minute());  // Show the time on the OLED display
+}
+
+// Function to toggle the alarm set status
+// Parameters:
+// none
+// Returns:
+// none
+void toggleAlarmSet () {
+  preferences.begin("alarmclock", false);                                   // Open preferences
+  preferences.putBool("alarmSet", !preferences.getBool("alarmSet", true));  // Write the opposite status to the preference to what is read
+  isAlarmSet = preferences.getBool("alarmSet");                             // Fill the "isAlarmSet" variable
+  preferences.end();                                                        // Close the preferences
+  
+  display.clear();                                                          // Clear the OLED display
+  display.setTextAlignment(TEXT_ALIGN_CENTER);                              // Align text to centre
+  display.setFont(ArialMT_Plain_24);                                        // Set the font
+  if (isAlarmSet) {                                                         // If the alarm is set...
+    drawAlarmOnImage();                                                     // ...Draw the Alarm on icon
+    display.display();                                                      // Update the display
+    delay(500);
+  }
+  else {                                                                    // If the alarm is not set...
+    drawAlarmOffImage();                                                    // ...Draw the Alarm on icon
+    display.display();                                                      // Update the display
     delay(500);
   }
 }

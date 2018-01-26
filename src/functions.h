@@ -262,7 +262,7 @@ void toggleAlarmSet () {
 // none
 // Returns:
 // an integer in the range 1..5 - we are only interested in 3 & 4 (Timer and Touchpad)
-int print_wakeup_reason(){
+int get_wakeup_reason(){
   esp_sleep_wakeup_cause_t wakeup_reason;
 
   wakeup_reason = esp_sleep_get_wakeup_cause();

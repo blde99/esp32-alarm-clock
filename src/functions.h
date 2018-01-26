@@ -45,17 +45,25 @@ void rtcInit () {
 // secondsTillAlarm - this is the amount of time in seconds between "t" and the NEXT alarm
 uint64_t secsTillAlarm(DateTime t) {
   int secondsTillAlarm = 0;                                             // Initialise the return variable
-
+  
+                                   
   int hoursLeft = hourAlarm - t.hour();                                 // Calculate the difference in hours between now and the alarm
   if (hoursLeft < 0) { hoursLeft += 24; }                               // Add 24 hours if we are past the alarm hour
   int minsLeft = minAlarm - t.minute();                                 // Calculate the difference in minutes between now and the alarm
-  if (minsLeft < 0) { minsLeft += 60; }                                 // Add 60 minutes if we are past the alarm minute
+  if (minsLeft < 0) { minsLeft += 59; }                                 // Add 60 minutes if we are past the alarm minute
   int secsLeft = secAlarm - t.second();                                 // Calculate the difference in seconds between now and the alarm
-  if (secsLeft < 0) { secsLeft += 60; }                                 // Add 60 seconds if we are past the alarm seconds
-
+  
   secondsTillAlarm = (hoursLeft * 3600) + (minsLeft * 60) + secsLeft;   // Convert it all to seconds...
+  secondsTillAlarm = secondsTillAlarm - 2;
+  Serial.print("secondsTillAlarm: "); Serial.println(secondsTillAlarm);
 
-  return secondsTillAlarm - 70;                                         // ... and return it
+  if (secondsTillAlarm < 0) {
+    secondsTillAlarm = secondsTillAlarm + 3600;
+  //  return 3550;
+  }
+  //else {
+    return secondsTillAlarm;                                       // ... and return it
+  //}
 }
 
 // utility function for digital clock display: prints leading 0
@@ -248,6 +256,7 @@ void toggleAlarmSet () {
   if (isAlarmSet) {                                                         // If the alarm is set...
     drawAlarmOnImage();                                                     // ...Draw the Alarm on icon
     display.display();                                                      // Update the display
+    alarmAcknowledged = false;                                              // Reset "alarmAcknowledged" variable
     delay(500);
   }
   else {                                                                    // If the alarm is not set...
@@ -320,10 +329,25 @@ void setAlarm () {
         preferences.putUInt("hourAlarm", hourAlarm);                        // Write the hour value to the preferences
         preferences.putUInt("minAlarm", minAlarm);                          // Write the minute value to the preferences
         preferences.putUInt("secAlarm", 0);                                 // Write the seconds value to the preferences
-        preferences.end();                                                  // Close perefernces
+        preferences.end();                                                  // Close pereferences
+        alarmAcknowledged = false;                                          // Reset "alarmAcknowledged" variable
         alarmSetComplete = true;                                            // Set "alarmSetComplete" to true to break out of the loop
         break;
     }
   }
   
+}
+
+// Function check the time against the alarm time
+// Parameters:
+// none
+// Returns:
+// true if they match, false if they don't match
+bool timeCheck (){
+  if (rtcTime.hour() == hourAlarm && rtcTime.minute() == minAlarm) {  // If the hours and minutes match...
+    return true;                                                      // ...return true
+  }
+  else {                                                              // If not...
+    return false;                                                     // ...return false
+  }
 }

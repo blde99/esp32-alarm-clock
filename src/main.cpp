@@ -66,6 +66,19 @@ void setup() {
         break;
     }
 
+    if (timeCheck() && !alarmAcknowledged) {
+      // Alarm has been triggered.
+      while (!alarmAcknowledged) {
+        Serial.print("ALARM!"); Serial.println(touchRead(TOUCH_PIN));
+        if (touchRead(TOUCH_PIN) < 50) {
+          alarmAcknowledged = true;
+          Serial.println("Alarm acknowledged!");
+        }
+      }
+      starttime = millis();                                 // Start the 5 second loop again to give the user
+      endtime = starttime;                                  // a chance to do something else.
+    }
+    //Serial.println(touchRead(TOUCH_PIN));
     endtime = millis();                                       // Set the endtime variable
   }
 
@@ -81,7 +94,7 @@ void setup() {
   else {
     Serial.println("Will sleep until interrupted by touch or alarm setting...");
   }
-  touchAttachInterrupt(T3,                                    // Setup interrupt on Touch Pad 3 (GPIO15)
+  touchAttachInterrupt(TOUCH_PIN,                                    // Setup interrupt on Touch Pad 3 (GPIO15)
                        callback,                              // When woken by touch, use the dummy callback variable
                        TOUCHPIN_SENSITIVITY_THRESHOLD);       // Use the sensitivity threshold value defined in global_vars.h
   esp_sleep_enable_touchpad_wakeup();                         // Configure Touchpad as wakeup source  

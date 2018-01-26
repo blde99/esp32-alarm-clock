@@ -1,4 +1,5 @@
 // Defines
+#define TOUCH_PIN T3
 #define DISPLAY_ON_DURATION 5000                    // Time in ms that the display will be on after an operation
 #define TOUCHPIN_SENSITIVITY_THRESHOLD 40           // Set the touchpad sensitivity for deep sleep wakeup
 #define ENCODER_BTN_SET_ALARM 34                    // ESP32 pin for the rotary encoder button
@@ -29,3 +30,4 @@ bool isAlarmSet;                                    // Variable that signifies w
 int hourAlarm;                                      // Store the alarm hour
 int minAlarm;                                       // Store the alarm minute
 int secAlarm;                                       // Store the alarm second
+RTC_DATA_ATTR bool alarmAcknowledged = false;       // If the alarm has been acknowledged then this will be true

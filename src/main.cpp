@@ -68,13 +68,8 @@ void setup() {
 
     if (timeCheck() && !alarmAcknowledged) {
       // Alarm has been triggered.
-      while (!alarmAcknowledged) {
-        Serial.print("ALARM!"); Serial.println(touchRead(TOUCH_PIN));
-        if (touchRead(TOUCH_PIN) < 50) {
-          alarmAcknowledged = true;
-          Serial.println("Alarm acknowledged!");
-        }
-      }
+      triggerAlarm();
+
       starttime = millis();                                 // Start the 5 second loop again to give the user
       endtime = starttime;                                  // a chance to do something else.
     }

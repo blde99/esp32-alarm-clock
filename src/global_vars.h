@@ -6,6 +6,10 @@
 #define ENCODER_CW_SET_ALARM 33                     // ESP32 pin for the rotary encoder clockwise trigger
 #define ENCODER_CCW_SET_ALARM 32                    // ESP32 pin for the rotary encoder counter clockwise trigger
 #define ENCODER_STEPS 4                             // Used to debound the encoder turns - I think!
+#define ALARM_BUZZER_PIN 12                         // Pin used for the piezo buzzer
+#define ALARM_BUZZER_FREQUENCY 5000                 // Frequency in Hz for buzzer
+#define ALARM_BUZZER_CHANNEL 0                      // Channel number for buzzer
+#define ALARM_BUZZER_RESOLUTION 8                   // Resolution for buzzer
 
 // Global variables
 uint8_t encoderButtonState;                         // Used to figure out if the rotary encoder button was clicked, held, etc.

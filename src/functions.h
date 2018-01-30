@@ -54,16 +54,15 @@ uint64_t secsTillAlarm(DateTime t) {
   int secsLeft = secAlarm - t.second();                                 // Calculate the difference in seconds between now and the alarm
   
   secondsTillAlarm = (hoursLeft * 3600) + (minsLeft * 60) + secsLeft;   // Convert it all to seconds...
-  secondsTillAlarm = secondsTillAlarm - 2;
-  Serial.print("secondsTillAlarm: "); Serial.println(secondsTillAlarm);
+  secondsTillAlarm = secondsTillAlarm - 2;                              // Ensure we wake 2 seconds before alarm triggers
+  Serial.print("secondsTillAlarm: "); Serial.println(secondsTillAlarm); // Debug
 
-  if (secondsTillAlarm < 0) {
-    secondsTillAlarm = secondsTillAlarm + 3600;
-  //  return 3550;
+  if (secondsTillAlarm < 0) {                                           // If we are past the alarm time add 3600 to give use the seconds...
+    secondsTillAlarm = secondsTillAlarm + 3600;                         // ...till the next alarm.
   }
-  //else {
-    return secondsTillAlarm;                                       // ... and return it
-  //}
+  
+  return secondsTillAlarm;                                              // ... and return the seconds till the next alarm
+  
 }
 
 // utility function for digital clock display: prints leading 0
@@ -338,7 +337,7 @@ void setAlarm () {
   
 }
 
-// Function check the time against the alarm time
+// Function to check the time against the alarm time
 // Parameters:
 // none
 // Returns:
@@ -350,4 +349,33 @@ bool timeCheck (){
   else {                                                              // If not...
     return false;                                                     // ...return false
   }
+}
+
+// Function to handle the alarm trigger task.
+// Parameters:
+// none
+// Returns:
+// none
+void triggerAlarm() {
+  unsigned long triggerTime = millis();
+  bool displayState = true;
+  //ledcSetup(ALARM_BUZZER_CHANNEL, ALARM_BUZZER_FREQUENCY, ALARM_BUZZER_RESOLUTION);
+  //ledcAttachPin(ALARM_BUZZER_PIN, ALARM_BUZZER_CHANNEL);  
+
+  Serial.println("ALARM!");
+  while (!alarmAcknowledged) {
+    //Serial.print("ALARM!"); Serial.println(touchRead(TOUCH_PIN));
+    if (touchRead(TOUCH_PIN) < 50) {
+      alarmAcknowledged = true;
+      Serial.println("Alarm acknowledged!");  
+    }
+    if (millis() == triggerTime + 1000) {
+      displayState = !displayState;
+      triggerTime = millis();
+      //Serial.print("triggerTime: "); Serial.println(triggerTime);
+    }
+    if (!displayState) { display.displayOff(); }// ledcWriteTone(ALARM_BUZZER_CHANNEL, ALARM_BUZZER_FREQUENCY); }
+    else { display.displayOn(); } 
+  }
+  display.displayOn();
 }

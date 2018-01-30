@@ -87,8 +87,7 @@ String twoDigits(int digits){
 // Returns:
 // timeSinceEpoch - Seconds since Epoch if successful
 // 0 - Returns this if failed
-time_t printLocalTime()
-{
+time_t printLocalTime(){
     struct tm timeinfo;                               // Create struct to place time into
     if(!getLocalTime(&timeinfo)){                     // Get the time and place it into the timeinfo variable
         Serial.println("Failed to obtain time");      // Print to serial if we fail...
@@ -190,8 +189,8 @@ void get_Time(){
   time_t returnedTime;                                            // Variable the is filled by the printLocalTime() function
 
   preferences.begin("alarmclock", false);                         // Open preferences
-  ssid = preferences.getString("ssid-work");                      // Get the WiFi SSID stored previously
-  password = preferences.getString("password-work");              // Get the WiFi password stored previously
+  ssid = preferences.getString("ssid-home");                      // Get the WiFi SSID stored previously
+  password = preferences.getString("password-home");              // Get the WiFi password stored previously
   preferences.end();                                              // Close preferences
   
   int counter = 0;                                                // Initialise a counter
@@ -359,13 +358,13 @@ bool timeCheck (){
 void triggerAlarm() {
   unsigned long triggerTime = millis();
   bool displayState = true;
-  //ledcSetup(ALARM_BUZZER_CHANNEL, ALARM_BUZZER_FREQUENCY, ALARM_BUZZER_RESOLUTION);
-  //ledcAttachPin(ALARM_BUZZER_PIN, ALARM_BUZZER_CHANNEL);  
+  ledcSetup(ALARM_BUZZER_CHANNEL, ALARM_BUZZER_FREQUENCY, ALARM_BUZZER_RESOLUTION);
+  ledcAttachPin(ALARM_BUZZER_PIN, ALARM_BUZZER_CHANNEL);  
 
   Serial.println("ALARM!");
   while (!alarmAcknowledged) {
     //Serial.print("ALARM!"); Serial.println(touchRead(TOUCH_PIN));
-    if (touchRead(TOUCH_PIN) < 50) {
+    if (touchRead(TOUCH_PIN) < 40) {
       alarmAcknowledged = true;
       Serial.println("Alarm acknowledged!");  
     }
@@ -374,8 +373,9 @@ void triggerAlarm() {
       triggerTime = millis();
       //Serial.print("triggerTime: "); Serial.println(triggerTime);
     }
-    if (!displayState) { display.displayOff(); }// ledcWriteTone(ALARM_BUZZER_CHANNEL, ALARM_BUZZER_FREQUENCY); }
-    else { display.displayOn(); } 
+    if (!displayState) { display.displayOff(); ledcWriteTone(ALARM_BUZZER_CHANNEL, ALARM_BUZZER_FREQUENCY); }
+    else { display.displayOn(); ledcWrite(ALARM_BUZZER_CHANNEL, 0); } 
   }
   display.displayOn();
+  ledcWrite(ALARM_BUZZER_CHANNEL, 0);
 }

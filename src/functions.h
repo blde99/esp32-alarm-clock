@@ -358,24 +358,32 @@ bool timeCheck (){
 void triggerAlarm() {
   unsigned long triggerTime = millis();
   bool displayState = true;
-  ledcSetup(ALARM_BUZZER_CHANNEL, ALARM_BUZZER_FREQUENCY, ALARM_BUZZER_RESOLUTION);
-  ledcAttachPin(ALARM_BUZZER_PIN, ALARM_BUZZER_CHANNEL);  
 
-  Serial.println("ALARM!");
-  while (!alarmAcknowledged) {
-    //Serial.print("ALARM!"); Serial.println(touchRead(TOUCH_PIN));
-    if (touchRead(TOUCH_PIN) < 40) {
-      alarmAcknowledged = true;
-      Serial.println("Alarm acknowledged!");  
+  ledcSetup(ALARM_BUZZER_CHANNEL,                                 // Set up LEDC
+            ALARM_BUZZER_FREQUENCY, 
+            ALARM_BUZZER_RESOLUTION);
+  ledcAttachPin(ALARM_BUZZER_PIN, ALARM_BUZZER_CHANNEL);          // Attach LEDC to buzzer pin
+
+  Serial.println("ALARM!");                                       // Debug
+  while (!alarmAcknowledged) {                                    // While the alarm has not been acknowledged, carry out the alarm notification
+    if (touchRead(TOUCH_PIN) < 40) {                              // If the "TOUCH_PIN" has been triggered...
+      alarmAcknowledged = true;                                   // ...set "alarmAcknowledged" to true
+      Serial.println("Alarm acknowledged!");                      // Debug
     }
-    if (millis() == triggerTime + 1000) {
-      displayState = !displayState;
-      triggerTime = millis();
-      //Serial.print("triggerTime: "); Serial.println(triggerTime);
+    if (millis() == triggerTime + 1000) {                         // If a second has passed...
+      displayState = !displayState;                               // ...toggle "displayState"...
+      triggerTime = millis();                                     // ...and start the count again.
     }
-    if (!displayState) { display.displayOff(); ledcWriteTone(ALARM_BUZZER_CHANNEL, ALARM_BUZZER_FREQUENCY); }
-    else { display.displayOn(); ledcWrite(ALARM_BUZZER_CHANNEL, 0); } 
+    if (!displayState) {                                          // If "displayState" is FALSE...
+      display.displayOff();                                       // ...turn off the display...
+      ledcWriteTone(ALARM_BUZZER_CHANNEL,                         // ...and sound the buzzer.
+                    ALARM_BUZZER_FREQUENCY);
+      }
+    else {                                                        // If "displayState" is TRUE...
+      display.displayOn();                                        // ...turn on the display...
+      ledcWrite(ALARM_BUZZER_CHANNEL, 0);                         // ...and turn off the buzzer
+      } 
   }
-  display.displayOn();
-  ledcWrite(ALARM_BUZZER_CHANNEL, 0);
+  display.displayOn();                                            // When the alarm has been acknowledged, turn on the display...
+  ledcWrite(ALARM_BUZZER_CHANNEL, 0);                             // ...and turn off the buzzer.
 }

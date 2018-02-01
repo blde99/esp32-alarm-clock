@@ -211,6 +211,7 @@ void get_Time(){
     configTime(0, 0, ntpServerName);                              // Set the GMT offset, daylight savings and NTP server
     returnedTime = printLocalTime();                              // Get the time and fill the "returnedTime" variable
     if (returnedTime != 0) {                                      // If we were successful getting the time...
+      Serial.println((UK.toLocal(returnedTime, &tcr), tcr -> abbrev, "London"));
       rtc.adjust(returnedTime);                                   // ...set the DS1307 RTC module
       drawSuccessImage();                                         // Draw the success icon on the OLED display
       delay(500); 

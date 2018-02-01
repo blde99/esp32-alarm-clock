@@ -35,3 +35,8 @@ int hourAlarm;                                      // Store the alarm hour
 int minAlarm;                                       // Store the alarm minute
 int secAlarm;                                       // Store the alarm second
 RTC_DATA_ATTR bool alarmAcknowledged = false;       // If the alarm has been acknowledged then this will be true
+
+TimeChangeRule BST = {"BST", Last, Sun, Mar, 2, 60};     //Central European Summer Time
+TimeChangeRule GMT = {"GMT", Last, Sun, Oct, 2, 0};       //Central European Standard Time
+Timezone UK(BST, GMT);
+TimeChangeRule *tcr;

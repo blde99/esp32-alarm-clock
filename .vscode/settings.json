@@ -5,5 +5,9 @@
     },
     "files.associations": {
         "limits": "cpp"
+    },
+    "terminal.integrated.env.linux": {
+        "PATH": "/home/matt/.platformio/penv/bin:/home/matt/.platformio/penv:/home/matt/bin:/home/matt/.local/bin:/home/matt/bin:/home/matt/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "PLATFORMIO_CALLER": "vscode"
     }
 }

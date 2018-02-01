@@ -4,11 +4,12 @@
         {
             "type": "gdb",
             "request": "launch",
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "name": "PlatformIO Debugger",
-            "target": "c:/Users/mattp/Documents/PlatformIO/Projects/esp32-alarm-clock/.pioenvs/esp32dev/firmware.elf",
-            "gdbpath": "C:/Users/mattp/.platformio/penv/Scripts/piodebuggdb",
-            "autorun": [ "source .pioinit" ]
+            "target": "/home/matt/Documents/PlatformIO/Projects/esp32-alarm-clock/.pioenvs/esp32dev/firmware.elf",
+            "gdbpath": "/home/matt/.platformio/penv/bin/piodebuggdb",
+            "autorun": [ "source .pioinit" ],
+            "preLaunchTask": "PlatformIO: Pre-Debug"
         }
     ]
 }

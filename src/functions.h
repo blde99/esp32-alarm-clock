@@ -89,12 +89,14 @@ String twoDigits(int digits){
 // 0 - Returns this if failed
 time_t printLocalTime(){
     struct tm timeinfo;                               // Create struct to place time into
+    time_t timeSinceEpoch, londonTime;
     if(!getLocalTime(&timeinfo)){                     // Get the time and place it into the timeinfo variable
         Serial.println("Failed to obtain time");      // Print to serial if we fail...
         return 0;                                     // ...and return 0
     }
-    time_t timeSinceEpoch = mktime(&timeinfo);        // Convert timeinfo variable to epoch time and put into the "timeSinceEpoch" variable
-    return timeSinceEpoch;                            // Return the "timeSinceEpoch" variable
+    timeSinceEpoch = mktime(&timeinfo);               // Convert timeinfo variable to epoch time and put into the "timeSinceEpoch" variable
+    londonTime = UK.toLocal(timeSinceEpoch);          // Convert the time to local time (BST or GMT)...
+    return londonTime;                                // Return the "londonTime" variable
 }
 
 // Function to display the time/alarm on the OLED display
@@ -211,9 +213,6 @@ void get_Time(){
     configTime(0, 0, ntpServerName);                              // Set the GMT offset, daylight savings and NTP server
     returnedTime = printLocalTime();                              // Get the time and fill the "returnedTime" variable
     if (returnedTime != 0) {                                      // If we were successful getting the time...
-      Serial.println((UK.toLocal
-                      (returnedTime, &tcr), 
-                      tcr -> abbrev, "London"));                  // Debug
       rtc.adjust(returnedTime);                                   // ...set the DS1307 RTC module
       drawSuccessImage();                                         // Draw the success icon on the OLED display
       delay(500); 

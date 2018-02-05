@@ -1,7 +1,7 @@
 // Defines
 #define TOUCH_PIN T3
 #define DISPLAY_ON_DURATION 5000                    // Time in ms that the display will be on after an operation
-#define TOUCHPIN_SENSITIVITY_THRESHOLD 40           // Set the touchpad sensitivity for deep sleep wakeup
+#define TOUCHPIN_SENSITIVITY_THRESHOLD 50           // Set the touchpad sensitivity for deep sleep wakeup
 #define ENCODER_BTN_SET_ALARM 34                    // ESP32 pin for the rotary encoder button
 #define ENCODER_CW_SET_ALARM 33                     // ESP32 pin for the rotary encoder clockwise trigger
 #define ENCODER_CCW_SET_ALARM 32                    // ESP32 pin for the rotary encoder counter clockwise trigger

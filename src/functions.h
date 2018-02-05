@@ -55,7 +55,7 @@ uint64_t secsTillAlarm(DateTime t) {
   
   secondsTillAlarm = (hoursLeft * 3600) + (minsLeft * 60) + secsLeft;   // Convert it all to seconds...
   secondsTillAlarm = secondsTillAlarm - 2;                              // Ensure we wake 2 seconds before alarm triggers
-  Serial.print("secondsTillAlarm: "); Serial.println(secondsTillAlarm); // Debug
+  //Serial.print("secondsTillAlarm: "); Serial.println(secondsTillAlarm); // Debug
 
   if (secondsTillAlarm < 0) {                                           // If we are past the alarm time add 3600 to give use the seconds...
     secondsTillAlarm = secondsTillAlarm + 3600;                         // ...till the next alarm.
@@ -191,8 +191,8 @@ void get_Time(){
   time_t returnedTime;                                            // Variable the is filled by the printLocalTime() function
 
   preferences.begin("alarmclock", false);                         // Open preferences
-  ssid = preferences.getString("ssid-home");                      // Get the WiFi SSID stored previously
-  password = preferences.getString("password-home");              // Get the WiFi password stored previously
+  ssid = preferences.getString("ssid-work");                      // Get the WiFi SSID stored previously
+  password = preferences.getString("password-work");              // Get the WiFi password stored previously
   preferences.end();                                              // Close preferences
   
   int counter = 0;                                                // Initialise a counter
@@ -360,6 +360,7 @@ bool timeCheck (){
 void triggerAlarm() {
   unsigned long triggerTime = millis();
   bool displayState = true;
+  int touchPinVal = 0;
 
   ledcSetup(ALARM_BUZZER_CHANNEL,                                 // Set up LEDC
             ALARM_BUZZER_FREQUENCY, 
@@ -368,7 +369,10 @@ void triggerAlarm() {
 
   Serial.println("ALARM!");                                       // Debug
   while (!alarmAcknowledged) {                                    // While the alarm has not been acknowledged, carry out the alarm notification
-    if (touchRead(TOUCH_PIN) < 40) {                              // If the "TOUCH_PIN" has been triggered...
+  delay(1);                                                       // Padding delay to allow the touch sensor to settle down
+  touchPinVal = touchRead(TOUCH_PIN);                             // Read the "TOUCH_PIN" into a variable
+  Serial.print("TOUCH_PIN: "); Serial.println(touchPinVal);       // Debug
+    if (touchPinVal < 50) {                                       // If the "TOUCH_PIN" has been triggered...
       alarmAcknowledged = true;                                   // ...set "alarmAcknowledged" to true
       Serial.println("Alarm acknowledged!");                      // Debug
     }

@@ -191,8 +191,8 @@ void get_Time(){
   time_t returnedTime;                                            // Variable the is filled by the printLocalTime() function
 
   preferences.begin("alarmclock", false);                         // Open preferences
-  ssid = preferences.getString("ssid-work");                      // Get the WiFi SSID stored previously
-  password = preferences.getString("password-work");              // Get the WiFi password stored previously
+  ssid = preferences.getString("ssid-home");                      // Get the WiFi SSID stored previously
+  password = preferences.getString("password-home");              // Get the WiFi password stored previously
   preferences.end();                                              // Close preferences
   
   int counter = 0;                                                // Initialise a counter
@@ -360,36 +360,52 @@ bool timeCheck (){
 void triggerAlarm() {
   unsigned long triggerTime = millis();
   bool displayState = true;
-  int touchPinVal = 0;
-
+  float touchSensorReading = 0;  // Read the analog value for the touch sensor
+  byte touchSampleSize = 5;      // Number of samples we want to take
+    
   ledcSetup(ALARM_BUZZER_CHANNEL,                                 // Set up LEDC
             ALARM_BUZZER_FREQUENCY, 
             ALARM_BUZZER_RESOLUTION);
   ledcAttachPin(ALARM_BUZZER_PIN, ALARM_BUZZER_CHANNEL);          // Attach LEDC to buzzer pin
 
   Serial.println("ALARM!");                                       // Debug
-  while (!alarmAcknowledged) {                                    // While the alarm has not been acknowledged, carry out the alarm notification
-  delay(1);                                                       // Padding delay to allow the touch sensor to settle down
-  touchPinVal = touchRead(TOUCH_PIN);                             // Read the "TOUCH_PIN" into a variable
-  Serial.print("TOUCH_PIN: "); Serial.println(touchPinVal);       // Debug
-    if (touchPinVal < 50) {                                       // If the "TOUCH_PIN" has been triggered...
+  while (!alarmAcknowledged) {  
+    Serial.println("Start WHILE loop");                                   // While the alarm has not been acknowledged, carry out the alarm notification
+    for(byte i=0; i<touchSampleSize; i++)  // Average samples together to minimize false readings
+      {
+        Serial.println("Start FOR loop"); 
+        touchSensorReading += touchRead(TOUCH_PIN); // We sample the touch pin here
+        //delay(1);
+      }
+      Serial.println("End FOR loop"); 
+    touchSensorReading /= touchSampleSize;
+    //Serial.print("touchSensorReading: "); Serial.println(touchSensorReading);
+    Serial.println("Before SENSOR check"); 
+    if (touchSensorReading < 50) {                                // If the "TOUCH_PIN" has been triggered...
+      Serial.println("During SENSOR check"); 
       alarmAcknowledged = true;                                   // ...set "alarmAcknowledged" to true
       Serial.println("Alarm acknowledged!");                      // Debug
     }
+    Serial.println("After SENSOR check"); 
     if (millis() == triggerTime + 1000) {                         // If a second has passed...
+      Serial.println("During DISPLAY toggle"); 
+      Serial.println("Changed...");
       displayState = !displayState;                               // ...toggle "displayState"...
       triggerTime = millis();                                     // ...and start the count again.
     }
     if (!displayState) {                                          // If "displayState" is FALSE...
+    Serial.println("Turn Display OFF"); 
       display.displayOff();                                       // ...turn off the display...
       ledcWriteTone(ALARM_BUZZER_CHANNEL,                         // ...and sound the buzzer.
                     ALARM_BUZZER_FREQUENCY);
       }
     else {                                                        // If "displayState" is TRUE...
+      Serial.println("Turn Display ON");
       display.displayOn();                                        // ...turn on the display...
-      ledcWrite(ALARM_BUZZER_CHANNEL, 0);                         // ...and turn off the buzzer
+      ledcWriteTone(ALARM_BUZZER_CHANNEL, 0);                     // ...and turn off the buzzer
       } 
   }
+  Serial.println("Exit FUNCTION");
   display.displayOn();                                            // When the alarm has been acknowledged, turn on the display...
-  ledcWrite(ALARM_BUZZER_CHANNEL, 0);                             // ...and turn off the buzzer.
+  ledcWriteTone(ALARM_BUZZER_CHANNEL, 0);                         // ...and turn off the buzzer.
 }

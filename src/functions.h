@@ -268,6 +268,18 @@ void get_Time()
     Serial.println("Failed to connect!"); // If we failed to connect to WiFi, draw the error icon on the OLED display
     drawErrorImage();
     delay(500);
+    // oled.setFont(ArialMT_Plain_16);
+    // oled.setTextAlignment(TEXT_ALIGN_CENTER);
+    // oled.drawStringMaxWidth(64,10,120,"Could not connect to WiFi!");
+    // oled.display();
+    // delay(500);
+    // oled.drawStringMaxWidth(64,10,120,"Waiting for SmartConfig...");
+    // oled.display();
+    // WiFi.beginSmartConfig();
+    // while (!WiFi.smartConfigDone()) {}
+    // Serial.println(WiFi.getNetworkInfo());
+    // oled.drawStringMaxWidth(64,10,120,"SmartConfig complete!");
+    // oled.display();
   }
 }
 

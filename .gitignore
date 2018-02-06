@@ -1,4 +1,3 @@
 .pioenvs
-.vscode/c_cpp_properties.json
+.vscode
 .travis.yml
-.vscode/launch.json

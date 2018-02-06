@@ -43,6 +43,7 @@ void setup()
     showTime(); // ...so show the time on the OLED display
     break;      // Exit Switch
   default:      // We weren't woken by timer or touch...
+    break;      // Do Nothing
   }
 
   unsigned long starttime, endtime; // Declare the variables required for the 5 second loop

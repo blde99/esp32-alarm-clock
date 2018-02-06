@@ -357,7 +357,7 @@ void setAlarm()
   int setFunction = 0;           // setFunction will be 0, 1 or 2 (Hours, minutes, finished)
 
   while (!alarmSetComplete)
-  {
+  {                                      // Do this loop until the use has finished setting the alarm
     encoder.service();                   // Get values from the rotary encoder
     drawTime(hourAlarm, minAlarm, true); // Update the alarm time on the OLED display
 
@@ -379,7 +379,7 @@ void setAlarm()
         hourAlarm = 23; // ...set "hourAlarm" to 24 to start again
       }
       break;
-    case 1:                           // If setFunction is 0, we are setting the minute for the alarm
+    case 1:                           // If setFunction is 1, we are setting the minute for the alarm
       minAlarm += encoder.getValue(); // Update the "minAlarm" variable by incrementing or decrementing from encoder
       if (minAlarm > 59)
       {               // If "minAlarm" is 60 or more...
@@ -390,7 +390,7 @@ void setAlarm()
         minAlarm = 59; // ...set "minAlarm" to 59 to start again
       }
       break;
-    case 2:                                        // If setFunction is 0, we have finished setting the alarm
+    case 2:                                        // If setFunction is 2, we have finished setting the alarm
       preferences.begin("alarmclock", false);      // Open preferences
       preferences.putUInt("hourAlarm", hourAlarm); // Write the hour value to the preferences
       preferences.putUInt("minAlarm", minAlarm);   // Write the minute value to the preferences
@@ -398,7 +398,7 @@ void setAlarm()
       preferences.end();                           // Close pereferences
       alarmAcknowledged = false;                   // Reset "alarmAcknowledged" variable
       alarmSetComplete = true;                     // Set "alarmSetComplete" to true to break out of the loop
-      break;
+      break;                                       // Exit Switch
     }
   }
 }

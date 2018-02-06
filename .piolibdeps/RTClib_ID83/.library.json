@@ -1,0 +1,46 @@
+{
+    "description": "A fork of Jeelab's fantastic RTC library", 
+    "repository": {
+        "url": "https://github.com/adafruit/RTClib", 
+        "type": "git"
+    }, 
+    "platforms": [
+        "atmelavr", 
+        "atmelsam", 
+        "espressif8266", 
+        "intel_arc32", 
+        "microchippic32", 
+        "nordicnrf51", 
+        "teensy", 
+        "timsp430"
+    ], 
+    "export": {
+        "exclude": [
+            "extras", 
+            "docs", 
+            "tests", 
+            "test", 
+            "*.doxyfile", 
+            "*.pdf"
+        ], 
+        "include": null
+    }, 
+    "authors": [
+        {
+            "maintainer": true, 
+            "name": "Adafruit", 
+            "url": null, 
+            "email": "info@adafruit.com"
+        }
+    ], 
+    "keywords": [
+        "timing"
+    ], 
+    "id": 83, 
+    "name": "RTClib", 
+    "frameworks": [
+        "arduino"
+    ], 
+    "version": "1.2.1", 
+    "homepage": null
+}

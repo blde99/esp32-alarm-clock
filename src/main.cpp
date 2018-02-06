@@ -103,7 +103,7 @@ void setup()
                        callback,                        // When woken by touch, use the dummy callback variable
                        TOUCHPIN_SENSITIVITY_THRESHOLD); // Use the sensitivity threshold value defined in global_vars.h
   esp_sleep_enable_touchpad_wakeup();                   // Configure Touchpad as wakeup source
-  display.displayOff();                                 // Turn off the OLED display
+  oled.displayOff();                                 // Turn off the OLED display
   Serial.println("Going to sleep now");                 // Debug
   esp_deep_sleep_start();                               // Go to sleep now
 }

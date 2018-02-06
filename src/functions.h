@@ -20,9 +20,9 @@ void getAlarmSettings()
 // None
 void displayInit()
 {
-  display.init();                 // Initialise the display
-  display.flipScreenVertically(); // Flip the display 180 degrees
-  display.setContrast(0);         // Set a really low contrast
+  oled.init();                 // Initialise the display
+  oled.flipScreenVertically(); // Flip the display 180 degrees
+  oled.setContrast(0);         // Set a really low contrast
 }
 
 // Function to initialise the DS1307 RTC module
@@ -35,12 +35,21 @@ void rtcInit()
   if (!rtc.begin())
   {
     Serial.println("Couldn't find RTC module!"); // Print fail message if RTC can't be found
+    oled.setFont(ArialMT_Plain_16);
+    oled.setTextAlignment(TEXT_ALIGN_CENTER);
+    oled.drawStringMaxWidth(64,10,120,"RTC not Found!");
+    oled.display();
     while (1)
       ; // Loop forever
   }
   if (!rtc.isrunning())
   {
     Serial.println("RTC module is not running!"); // Print fail message if RTC can be found but the time is not set
+    oled.setFont(ArialMT_Plain_16);
+    oled.setTextAlignment(TEXT_ALIGN_CENTER);
+    oled.drawStringMaxWidth(64,10,120,"RTC not Running!");
+    oled.display();
+    delay(5000);
   }
 }
 
@@ -125,22 +134,22 @@ time_t printLocalTime()
 // None
 void drawTime(int hourtoPrint, int mintoPrint, bool alarmSetMode = false)
 {
-  display.clear(); // Clear the display
+  oled.clear(); // Clear the display
 
   if (isAlarmSet)
-  {                                                                                            // If the alarm is set...
-    display.drawXbm(110, 0, alarm_on_small_width, alarm_on_small_height, alarm_on_small_bits); // ...display the alarm on icon top right of OLED
+  {                                                                                         // If the alarm is set...
+    oled.drawXbm(110, 0, alarm_on_small_width, alarm_on_small_height, alarm_on_small_bits); // ...display the alarm on icon top right of OLED
   }
   if (alarmSetMode)
-  {                                                                           // If we are setting the alarm time...
-    display.drawXbm(0, 0, cog_small_width, cog_small_height, cog_small_bits); // ...display the cog icon top right of OLED
+  {                                                                        // If we are setting the alarm time...
+    oled.drawXbm(0, 0, cog_small_width, cog_small_height, cog_small_bits); // ...display the cog icon top right of OLED
   }
 
   String timeToDraw = String(twoDigits(hourtoPrint)) + ":" + String(twoDigits(mintoPrint)); // Set the "timeToDraw" variable
-  display.setTextAlignment(TEXT_ALIGN_CENTER);                                              // Align text to centre of the OLED display
-  display.setFont(DejaVu_Sans_40);                                                          // Set the font for the text
-  display.drawString(64, 10, timeToDraw);                                                   // Draw the time on the display
-  display.display();
+  oled.setTextAlignment(TEXT_ALIGN_CENTER);                                                 // Align text to centre of the OLED display
+  oled.setFont(DejaVu_Sans_40);                                                             // Set the font for the text
+  oled.drawString(64, 10, timeToDraw);                                                      // Draw the time on the display
+  oled.display();
 }
 
 // Function to draw the WiFi logo on the OLED display
@@ -152,7 +161,7 @@ void drawWiFiImage()
 {
   // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
   // on how to create xbm files
-  display.drawXbm(34, 14, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
+  oled.drawXbm(34, 14, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
 }
 
 // Function to draw the Alarm on image on the OLED display when the alarm state is toggled
@@ -164,7 +173,7 @@ void drawAlarmOnImage()
 {
   // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
   // on how to create xbm files
-  display.drawXbm(40, 8, alarm_on_width, alarm_on_height, alarm_on_bits);
+  oled.drawXbm(40, 8, alarm_on_width, alarm_on_height, alarm_on_bits);
 }
 
 // Function to draw the Alarm off image on the OLED display when the alarm state is toggled
@@ -176,7 +185,7 @@ void drawAlarmOffImage()
 {
   // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
   // on how to create xbm files
-  display.drawXbm(40, 8, alarm_off_width, alarm_off_height, alarm_off_bits);
+  oled.drawXbm(40, 8, alarm_off_width, alarm_off_height, alarm_off_bits);
 }
 
 // Function to draw the error image on the OLED if the clock failed to set the time by NTP
@@ -188,9 +197,9 @@ void drawErrorImage()
 {
   // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
   // on how to create xbm files
-  display.clear();
-  display.drawXbm(40, 8, error_width, error_height, error_bits);
-  display.display();
+  oled.clear();
+  oled.drawXbm(40, 8, error_width, error_height, error_bits);
+  oled.display();
 }
 
 // Function to draw the success image on the OLED if the clock succeeded in setting the time by NTP
@@ -202,9 +211,9 @@ void drawSuccessImage()
 {
   // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
   // on how to create xbm files
-  display.clear();
-  display.drawXbm(40, 8, success_width, success_height, success_bits);
-  display.display();
+  oled.clear();
+  oled.drawXbm(40, 8, success_width, success_height, success_bits);
+  oled.display();
 }
 
 // Function to connect and get the time over WiFi
@@ -228,9 +237,9 @@ void get_Time()
   Serial.print(password);           // Debug
 
   WiFi.begin(ssid.c_str(), password.c_str()); // Connect to WiFi using the details gathered earlier
-  display.clear();                            // Clear the OLED display
+  oled.clear();                               // Clear the OLED display
   drawWiFiImage();                            // Show the WiFi logo to indicate we are trying to connect to WiFi
-  display.display();                          // Update the OLED display
+  oled.display();                             // Update the OLED display
   while ((WiFi.status() != WL_CONNECTED) && (counter <= 10))
   {             // If we haven't connected to WiFi yet...
     delay(500); // Show dots in the Serial monitor for 5 secs
@@ -285,20 +294,20 @@ void toggleAlarmSet()
   isAlarmSet = preferences.getBool("alarmSet");                            // Fill the "isAlarmSet" variable
   preferences.end();                                                       // Close the preferences
 
-  display.clear();                             // Clear the OLED display
-  display.setTextAlignment(TEXT_ALIGN_CENTER); // Align text to centre
-  display.setFont(ArialMT_Plain_24);           // Set the font
+  oled.clear();                             // Clear the OLED display
+  oled.setTextAlignment(TEXT_ALIGN_CENTER); // Align text to centre
+  oled.setFont(ArialMT_Plain_24);           // Set the font
   if (isAlarmSet)
   {                            // If the alarm is set...
     drawAlarmOnImage();        // ...Draw the Alarm on icon
-    display.display();         // Update the display
+    oled.display();            // Update the display
     alarmAcknowledged = false; // Reset "alarmAcknowledged" variable
     delay(500);
   }
   else
   {                      // If the alarm is not set...
     drawAlarmOffImage(); // ...Draw the Alarm on icon
-    display.display();   // Update the display
+    oled.display();      // Update the display
     delay(500);
   }
 }
@@ -456,17 +465,17 @@ void triggerAlarm()
     }
     if (!displayState)
     {                                     // If "displayState" is FALSE...
-      display.displayOff();               // ...turn off the display...
+      oled.displayOff();                  // ...turn off the display...
       ledcWriteTone(ALARM_BUZZER_CHANNEL, // ...and turn off the buzzer.
                     0);
     }
     else
-    {                      // If "displayState" is TRUE...
-      display.displayOn(); // ...turn on the display...
+    {                   // If "displayState" is TRUE...
+      oled.displayOn(); // ...turn on the display...
       ledcWriteTone(ALARM_BUZZER_CHANNEL,
                     ALARM_BUZZER_FREQUENCY); // ...and sound the buzzer
     }
   }
-  display.displayOn();                    // When the alarm has been acknowledged, turn on the display...
+  oled.displayOn();                       // When the alarm has been acknowledged, turn on the display...
   ledcWriteTone(ALARM_BUZZER_CHANNEL, 0); // ...and turn off the buzzer.
 }

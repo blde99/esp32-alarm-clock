@@ -226,8 +226,8 @@ void get_Time()
   time_t returnedTime; // Variable the is filled by the printLocalTime() function
 
   preferences.begin("alarmclock", false);            // Open preferences
-  ssid = preferences.getString("ssid-work");         // Get the WiFi SSID stored previously
-  password = preferences.getString("password-work"); // Get the WiFi password stored previously
+  ssid = preferences.getString("ssid-home");         // Get the WiFi SSID stored previously
+  password = preferences.getString("password-home"); // Get the WiFi password stored previously
   preferences.end();                                 // Close preferences
 
   int counter = 0;                  // Initialise a counter
@@ -273,13 +273,6 @@ void get_Time()
     // oled.drawStringMaxWidth(64,10,120,"Could not connect to WiFi!");
     // oled.display();
     // delay(500);
-    // oled.drawStringMaxWidth(64,10,120,"Waiting for SmartConfig...");
-    // oled.display();
-    // WiFi.beginSmartConfig();
-    // while (!WiFi.smartConfigDone()) {}
-    // Serial.println(WiFi.getNetworkInfo());
-    // oled.drawStringMaxWidth(64,10,120,"SmartConfig complete!");
-    // oled.display();
   }
 }
 

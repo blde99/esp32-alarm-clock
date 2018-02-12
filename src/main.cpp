@@ -16,13 +16,19 @@
 
 void setup()
 {
-  pinMode(2, OUTPUT);                           // Set pin 2 as output - this pin also has the built in LED
+  Serial.begin(115200);         // Setup Serial output
+  pinMode(INBUILT_LED, OUTPUT); // Set pin 5 as output - this pin also has the built in LED
+  if (!firstStartComplete)      // If we booted from power on, not sleep...
+  {
+    startSequence(); // ...run the builtin led start sequence
+  }
   pinMode(ENCODER_BTN_SET_ALARM, INPUT_PULLUP); // Set pin 34 as input with pullup resistor
   pinMode(ENCODER_CW_SET_ALARM, INPUT);         // Set pin 33 as input
   pinMode(ENCODER_CCW_SET_ALARM, INPUT);        // Set pin 32 as input
   encoder.setAccelerationEnabled(true);         // Enable acceleration on the rotary encoder
 
-  Serial.begin(115200);                                                        // Setup Serial output
+  Serial.print("Clock speed: ");                                               // Debug
+  Serial.println(ESP.getCpuFreqMHz());                                         // Debug
   Serial.println();                                                            // Debug
   Serial.println("Setting up...");                                             // Debug
   Serial.print("Encoder acceleration is ");                                    // Debug
@@ -103,7 +109,7 @@ void setup()
                        callback,                        // When woken by touch, use the dummy callback variable
                        TOUCHPIN_SENSITIVITY_THRESHOLD); // Use the sensitivity threshold value defined in global_vars.h
   esp_sleep_enable_touchpad_wakeup();                   // Configure Touchpad as wakeup source
-  oled.displayOff();                                 // Turn off the OLED display
+  oled.displayOff();                                    // Turn off the OLED display
   Serial.println("Going to sleep now");                 // Debug
   esp_deep_sleep_start();                               // Go to sleep now
 }

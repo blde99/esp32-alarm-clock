@@ -10,6 +10,7 @@
 #define ALARM_BUZZER_FREQUENCY 1000       // Frequency in Hz for buzzer
 #define ALARM_BUZZER_CHANNEL 0            // Channel number for buzzer
 #define ALARM_BUZZER_RESOLUTION 8         // Resolution for buzzer
+#define INBUILT_LED 5                     // Built in LED
 
 // Global variables
 uint8_t encoderButtonState;                    // Used to figure out if the rotary encoder button was clicked, held, etc.
@@ -35,6 +36,7 @@ int hourAlarm;                                // Store the alarm hour
 int minAlarm;                                 // Store the alarm minute
 int secAlarm;                                 // Store the alarm second
 RTC_DATA_ATTR bool alarmAcknowledged = false; // If the alarm has been acknowledged then this will be true
+RTC_DATA_ATTR bool firstStartComplete = false; // Will be set to true by startSequence() after start sequence has been completed.
 
 TimeChangeRule BST = {"BST", Last, Sun, Mar, 2, 60}; //Central European Summer Time
 TimeChangeRule GMT = {"GMT", Last, Sun, Oct, 2, 0};  //Central European Standard Time

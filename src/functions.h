@@ -37,7 +37,7 @@ void rtcInit()
     Serial.println("Couldn't find RTC module!"); // Print fail message if RTC can't be found
     oled.setFont(ArialMT_Plain_16);
     oled.setTextAlignment(TEXT_ALIGN_CENTER);
-    oled.drawStringMaxWidth(64,10,120,"RTC not Found!");
+    oled.drawStringMaxWidth(64, 10, 120, "RTC not Found!");
     oled.display();
     while (1)
       ; // Loop forever
@@ -47,7 +47,7 @@ void rtcInit()
     Serial.println("RTC module is not running!"); // Print fail message if RTC can be found but the time is not set
     oled.setFont(ArialMT_Plain_16);
     oled.setTextAlignment(TEXT_ALIGN_CENTER);
-    oled.drawStringMaxWidth(64,10,120,"RTC not Running!");
+    oled.drawStringMaxWidth(64, 10, 120, "RTC not Running!");
     oled.display();
     delay(5000);
   }
@@ -483,4 +483,22 @@ void triggerAlarm()
   }
   oled.displayOn();                       // When the alarm has been acknowledged, turn on the display...
   ledcWriteTone(ALARM_BUZZER_CHANNEL, 0); // ...and turn off the buzzer.
+}
+
+// Function to flash the in built led on first boot.
+// Parameters:
+// none
+// Returns:
+// none
+void startSequence()
+{
+  digitalWrite(INBUILT_LED, HIGH); // Send inbuilt LED high
+  delay(250);                      // Sleep for quarter of a second
+  digitalWrite(INBUILT_LED, LOW);  // Send inbuilt LED low
+  delay(250);                      // Sleep for quarter of a second
+  digitalWrite(INBUILT_LED, HIGH); // Send inbuilt LED high
+  delay(250);                      // Sleep for quarter of a second
+  digitalWrite(INBUILT_LED, LOW);  // Send inbuilt LED low
+  delay(250);                      // Sleep for quarter of a second
+  firstStartComplete = true;       // toggle "firstStartComplete" variable so that the sequence is not run till next first boot
 }

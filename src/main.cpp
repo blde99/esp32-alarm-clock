@@ -39,7 +39,7 @@ void setup()
   Serial.println("Init RTC");               // Debug
   rtcInit();                                // Initialise the DS1307 RTC
   Serial.println("Getting alarm settings"); // Debug
-  getAlarmSettings();
+  getAlarmSettings();                       // Retrieve alarm settings from preferences an store them
 
   switch (get_wakeup_reason())
   {             // Get wakeup reason

@@ -83,7 +83,7 @@ uint64_t secsTillAlarm(DateTime t)
     secondsTillAlarm = secondsTillAlarm + 3600; // ...till the next alarm.
   }
 
-  return secondsTillAlarm; // ... and return the seconds till the next alarm
+  return (uint64_t)secondsTillAlarm; // ... and return the seconds till the next alarm
 }
 
 // utility function for digital clock display: prints leading 0
@@ -226,6 +226,7 @@ void get_Time()
   time_t returnedTime; // Variable the is filled by the printLocalTime() function
 
   preferences.begin("alarmclock", false);            // Open preferences
+
   ssid = preferences.getString("ssid-home");         // Get the WiFi SSID stored previously
   password = preferences.getString("password-home"); // Get the WiFi password stored previously
   preferences.end();                                 // Close preferences
@@ -233,7 +234,7 @@ void get_Time()
   int counter = 0;                  // Initialise a counter
   Serial.print("Connecting to ");   // Debug
   Serial.print(ssid);               // Debug
-  Serial.print(" with password  "); // Debug
+  Serial.print(" with password "); // Debug
   Serial.print(password);           // Debug
 
   WiFi.begin(ssid.c_str(), password.c_str()); // Connect to WiFi using the details gathered earlier

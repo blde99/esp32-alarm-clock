@@ -1,8 +1,9 @@
-#include <Arduino.h>      // Allows the ESP32 to be coded using Arduino code
-#include <Wire.h>         // i2c library
-#include <Time.h>         // Time library - this is a clock after all!
-#include "Timezone.h"     // TimeZone library - used to set BST or GMT
-#include <WiFi.h>         // Library used primarily for getting the time from the internet
+#include <Arduino.h>  // Allows the ESP32 to be coded using Arduino code
+#include <Wire.h>     // i2c library
+#include <Time.h>     // Time library - this is a clock after all!
+#include "Timezone.h" // TimeZone library - used to set BST or GMT
+#include <WiFi.h>     // Library used primarily for getting the time from the internet
+#include <stdlib.h>
 #include <Preferences.h>  // Library for storing data that needs to survive a reboot
 #include "ClickEncoder.h" // Library to read inputs from the rotary encoder
 
@@ -92,14 +93,17 @@ void setup()
   }
 
   if (isAlarmSet)
-  {                                                      // If the alarm is set...
-    uint32_t secsToSleep = secsTillAlarm(rtc.now());     // ...figure out how long (in seconds) till the next alarm
-    uint64_t iTimeToSleep = secsToSleep * microSecToSec; // Convert that to microseconds...
-    esp_sleep_enable_timer_wakeup(iTimeToSleep);         // ...and set the ESP32 sleep timer to that number
+  {                                                  // If the alarm is set...
+    uint64_t secsToSleep = secsTillAlarm(rtc.now()); // ...figure out how long (in seconds) till the next alarm
+    uint64_t iTimeToSleep = secsToSleep * 1000000;   // Convert that to microseconds...
+    esp_sleep_enable_timer_wakeup(iTimeToSleep);     // ...and set the ESP32 sleep timer to that number
+    char str[21];
 
-    Serial.print("Will sleep for "); // Debug
-    Serial.print(secsToSleep);       // Debug
-    Serial.println(" seconds.");     // Debug
+    Serial.print("Will sleep for ");     // Debug
+    Serial.printf("%llu", secsToSleep);  // Debug
+    Serial.print(" seconds or ");        // Debug
+    Serial.printf("%llu", iTimeToSleep); // Debug
+    Serial.println(" microseconds.");    // Debug
   }
   else
   {

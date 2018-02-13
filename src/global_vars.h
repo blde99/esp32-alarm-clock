@@ -28,7 +28,6 @@ ClickEncoder encoder(
     ENCODER_BTN_SET_ALARM, // Button esp32 pin
     ENCODER_STEPS);        // Initialise the rotary enoder
 
-const uint32_t microSecToSec = 1000000; // Microsecond to second conversion factor
 Preferences preferences;                // Initialize preferences used to store variables that survive poweroff
 
 bool isAlarmSet;                              // Variable that signifies whether or not the alarm is set

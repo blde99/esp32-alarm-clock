@@ -227,8 +227,8 @@ void get_Time()
 
   preferences.begin("alarmclock", false);            // Open preferences
 
-  ssid = preferences.getString("ssid-home");         // Get the WiFi SSID stored previously
-  password = preferences.getString("password-home"); // Get the WiFi password stored previously
+  ssid = preferences.getString("ssid-work");         // Get the WiFi SSID stored previously
+  password = preferences.getString("password-work"); // Get the WiFi password stored previously
   preferences.end();                                 // Close preferences
 
   int counter = 0;                  // Initialise a counter

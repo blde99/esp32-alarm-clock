@@ -460,7 +460,7 @@ void triggerAlarm()
       touchSensorReading += touchRead(TOUCH_PIN); // We sample the touch pin here
     }
     touchSensorReading /= touchSampleSize;
-    if (touchSensorReading < 50)
+    if (touchSensorReading < TOUCHPIN_SENSITIVITY_THRESHOLD)
     {                           // If the "TOUCH_PIN" has been triggered...
       alarmAcknowledged = true; // ...set "alarmAcknowledged" to true
     }

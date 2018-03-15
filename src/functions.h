@@ -225,17 +225,17 @@ void get_Time()
 {
   time_t returnedTime; // Variable the is filled by the printLocalTime() function
 
-  preferences.begin("alarmclock", false);            // Open preferences
+  preferences.begin("alarmclock", false); // Open preferences
 
   ssid = preferences.getString("ssid-home");         // Get the WiFi SSID stored previously
   password = preferences.getString("password-home"); // Get the WiFi password stored previously
   preferences.end();                                 // Close preferences
 
-  int counter = 0;                  // Initialise a counter
-  Serial.print("Connecting to ");   // Debug
-  Serial.print(ssid);               // Debug
+  int counter = 0;                 // Initialise a counter
+  Serial.print("Connecting to ");  // Debug
+  Serial.print(ssid);              // Debug
   Serial.print(" with password "); // Debug
-  Serial.print(password);           // Debug
+  Serial.print(password);          // Debug
 
   WiFi.begin(ssid.c_str(), password.c_str()); // Connect to WiFi using the details gathered earlier
   oled.clear();                               // Clear the OLED display
@@ -502,4 +502,15 @@ void startSequence()
   digitalWrite(INBUILT_LED, LOW);  // Send inbuilt LED low
   delay(250);                      // Sleep for quarter of a second
   firstStartComplete = true;       // toggle "firstStartComplete" variable so that the sequence is not run till next first boot
+}
+
+// Function to Check the voltage fof the battery.
+// Parameters:
+// none
+// Returns:
+// vBAT - This is a float with a value between 0 and 4.2 expresses as volts
+float getBatteryVoltage()
+{
+  float vBAT = (127.0f / 100.0f) * 3.30f * float(analogRead(BATTERY_READ_PIN)) / 4095.0f; // Calculates the voltage left in the battery
+  return vBAT;                                                                            // Return the voltage value
 }

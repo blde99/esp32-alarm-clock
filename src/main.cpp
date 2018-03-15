@@ -42,6 +42,10 @@ void setup()
   Serial.println("Getting alarm settings"); // Debug
   getAlarmSettings();                       // Retrieve alarm settings from preferences an store them
 
+  Serial.print("Battery Voltage: "); // Debug (Prints battery voltage on Serial, this will be displayed somehow)
+  Serial.print(getBatteryVoltage()); // Debug
+  Serial.println("V");               // Debug
+
   switch (get_wakeup_reason())
   {             // Get wakeup reason
   case 3:       // We were woken by timer...

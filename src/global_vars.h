@@ -1,5 +1,5 @@
 // Defines
-#define TOUCH_PIN T3
+#define TOUCH_PIN T3                      // Touch pin T3 is actually GPIO15
 #define DISPLAY_ON_DURATION 5000          // Time in ms that the display will be on after an operation
 #define TOUCHPIN_SENSITIVITY_THRESHOLD 60 // Set the touchpad sensitivity for deep sleep wakeup
 #define ENCODER_BTN_SET_ALARM 34          // ESP32 pin for the rotary encoder button
@@ -11,6 +11,7 @@
 #define ALARM_BUZZER_CHANNEL 0            // Channel number for buzzer
 #define ALARM_BUZZER_RESOLUTION 8         // Resolution for buzzer
 #define INBUILT_LED 5                     // Built in LED
+#define BATTERY_READ_PIN 35               // Pin used to read battery voltage
 
 // Global variables
 uint8_t encoderButtonState;                    // Used to figure out if the rotary encoder button was clicked, held, etc.

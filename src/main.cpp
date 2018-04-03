@@ -42,22 +42,31 @@ void setup()
   Serial.println("Getting alarm settings"); // Debug
   getAlarmSettings();                       // Retrieve alarm settings from preferences an store them
 
-  Serial.print("Battery Voltage: "); // Debug (Prints battery voltage on Serial, this will be displayed somehow)
+  Serial.print("Battery Voltage: ");    // Debug (Prints battery voltage on Serial, this will be displayed somehow)
   Serial.print(getBatteryVoltage(), 2); // Debug
-  Serial.println("V");               // Debug
+  Serial.println("V");                  // Debug
   String batteryText;
   float vBAT;
 
   switch (get_wakeup_reason())
-  {             // Get wakeup reason
-  case 3:       // We were woken by timer...
-    break;      // Nothing to do since our default action is to handle being woken by timer.
-  case 4:       // We were woken by touchpad...
+  {        // Get wakeup reason
+  case 3:  // We were woken by timer...
+    break; // Nothing to do since our default action is to handle being woken by timer.
+  case 4:  // We were woken by touchpad...
     vBAT = ceilf(getBatteryVoltage() * 100) / 100;
     batteryText = String(vBAT) + "V";
-    oled.setTextAlignment(TEXT_ALIGN_CENTER);                                                 // Align text to centre of the OLED display
-    oled.setFont(DejaVu_Sans_40);                                                             // Set the font for the text
-    oled.drawString(64, 10, batteryText);                                                      // Draw the time on the display
+    if (vBAT <= 3.76F)
+    { // If vBAT is less than or equal to 3.66V...
+      // ...raise charge flag
+    }
+    else
+    { // ...otherwise...
+      // ...lower the charge flag
+    }
+
+    oled.setTextAlignment(TEXT_ALIGN_CENTER); // Align text to centre of the OLED display
+    oled.setFont(DejaVu_Sans_40);             // Set the font for the text
+    oled.drawString(64, 10, batteryText);     // Draw the time on the display
     oled.display();
     delay(1000);
     showTime(); // ...so show the time on the OLED display

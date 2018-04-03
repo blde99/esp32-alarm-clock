@@ -9,7 +9,8 @@
 #define ALARM_BUZZER_PIN 12               // Pin used for the piezo buzzer
 #define ALARM_BUZZER_FREQUENCY 2000       // Frequency in Hz for buzzer
 #define ALARM_BUZZER_CHANNEL 0            // Channel number for buzzer
-#define ALARM_BUZZER_RESOLUTION 8         // Resolution for buzzer - can be upt 255.  Can this be used to increase the volume?
+#define ALARM_BUZZER_RESOLUTION 8         // Resolution for buzzer
+#define ALARM_BUZZER_DUTYCYCLE 50         // Duty Cycle for the buzzer - up to 255.  Can be used for adjusting the volume of the buzzer
 #define INBUILT_LED 5                     // Built in LED
 #define BATTERY_READ_PIN 35               // Pin used to read battery voltage
 
@@ -41,3 +42,6 @@ RTC_DATA_ATTR bool firstStartComplete = false; // Will be set to true by startSe
 TimeChangeRule BST = {"BST", Last, Sun, Mar, 2, 60}; //Central European Summer Time
 TimeChangeRule GMT = {"GMT", Last, Sun, Oct, 2, 0};  //Central European Standard Time
 Timezone UK(BST, GMT);
+
+RTC_DATA_ATTR bool batteryChargeRequired = false;
+RTC_DATA_ATTR bool batteryChargeFlagRaised = false;

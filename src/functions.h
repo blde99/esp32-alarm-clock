@@ -479,11 +479,13 @@ void triggerAlarm()
     {                   // If "displayState" is TRUE...
       oled.displayOn(); // ...turn on the display...
       ledcWriteTone(ALARM_BUZZER_CHANNEL,
-                    ALARM_BUZZER_FREQUENCY); // ...and sound the buzzer
+                    ALARM_BUZZER_FREQUENCY);                   // ...and sound the buzzer
+      ledcWrite(ALARM_BUZZER_CHANNEL, ALARM_BUZZER_DUTYCYCLE); // At the desired volume
     }
   }
   oled.displayOn();                       // When the alarm has been acknowledged, turn on the display...
   ledcWriteTone(ALARM_BUZZER_CHANNEL, 0); // ...and turn off the buzzer.
+  ledcDetachPin(ALARM_BUZZER_PIN);
 }
 
 // Function to flash the in built led on first boot.
@@ -508,7 +510,7 @@ void startSequence()
 // Parameters:
 // none
 // Returns:
-// vBAT - This is a float with a value between 0 and 4.2 expresses as volts
+// vBAT - This is a float with a value between 0 and 4.2 expressed as volts
 float getBatteryVoltage()
 {
   float vBAT = (127.0f / 100.0f) * 3.30f * float(analogRead(BATTERY_READ_PIN)) / 4095.0f; // Calculates the voltage left in the battery

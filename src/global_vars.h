@@ -7,9 +7,9 @@
 #define ENCODER_CCW_SET_ALARM 32          // ESP32 pin for the rotary encoder counter clockwise trigger
 #define ENCODER_STEPS 4                   // Used to debound the encoder turns - I think!
 #define ALARM_BUZZER_PIN 12               // Pin used for the piezo buzzer
-#define ALARM_BUZZER_FREQUENCY 1000       // Frequency in Hz for buzzer
+#define ALARM_BUZZER_FREQUENCY 2000       // Frequency in Hz for buzzer
 #define ALARM_BUZZER_CHANNEL 0            // Channel number for buzzer
-#define ALARM_BUZZER_RESOLUTION 8         // Resolution for buzzer
+#define ALARM_BUZZER_RESOLUTION 8         // Resolution for buzzer - can be upt 255.  Can this be used to increase the volume?
 #define INBUILT_LED 5                     // Built in LED
 #define BATTERY_READ_PIN 35               // Pin used to read battery voltage
 

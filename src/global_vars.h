@@ -13,6 +13,7 @@
 #define ALARM_BUZZER_DUTYCYCLE 50         // Duty Cycle for the buzzer - up to 255.  Can be used for adjusting the volume of the buzzer
 #define INBUILT_LED 5                     // Built in LED
 #define BATTERY_READ_PIN 35               // Pin used to read battery voltage
+#define CHARGE_SERVO_PIN 23               // Pin for Servo
 
 // Global variables
 uint8_t encoderButtonState;                    // Used to figure out if the rotary encoder button was clicked, held, etc.
@@ -43,5 +44,6 @@ TimeChangeRule BST = {"BST", Last, Sun, Mar, 2, 60}; //Central European Summer T
 TimeChangeRule GMT = {"GMT", Last, Sun, Oct, 2, 0};  //Central European Standard Time
 Timezone UK(BST, GMT);
 
+Servo chargeServo;
 RTC_DATA_ATTR bool batteryChargeRequired = false;
 RTC_DATA_ATTR bool batteryChargeFlagRaised = false;

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <Preferences.h>  // Library for storing data that needs to survive a reboot
 #include "ClickEncoder.h" // Library to read inputs from the rotary encoder
+#include <Servo.h>        // Library for Servo
 
 // Includes for OLED screen
 #include "images.h"  // Include file containing custom images for OLED screen
@@ -39,36 +40,28 @@ void setup()
   displayInit();                            // Initialise the OLED display
   Serial.println("Init RTC");               // Debug
   rtcInit();                                // Initialise the DS1307 RTC
+  chargeServo.attach(CHARGE_SERVO_PIN);
   Serial.println("Getting alarm settings"); // Debug
   getAlarmSettings();                       // Retrieve alarm settings from preferences an store them
 
-  Serial.print("Battery Voltage: ");    // Debug (Prints battery voltage on Serial, this will be displayed somehow)
-  Serial.print(getBatteryVoltage(), 2); // Debug
-  Serial.println("V");                  // Debug
   String batteryText;
   float vBAT;
-
+  vBAT = ceilf(getBatteryVoltage() * 100) / 100;
+  batteryText = String(vBAT) + "V";
+  Serial.print("Battery Voltage: ");    // Debug (Prints battery voltage on Serial, this will be displayed somehow)
+  Serial.println(batteryText);          // Debug
+  
   switch (get_wakeup_reason())
   {        // Get wakeup reason
   case 3:  // We were woken by timer...
     break; // Nothing to do since our default action is to handle being woken by timer.
   case 4:  // We were woken by touchpad...
-    vBAT = ceilf(getBatteryVoltage() * 100) / 100;
-    batteryText = String(vBAT) + "V";
-    if (vBAT <= 3.76F)
-    { // If vBAT is less than or equal to 3.66V...
-      // ...raise charge flag
-    }
-    else
-    { // ...otherwise...
-      // ...lower the charge flag
-    }
-
-    oled.setTextAlignment(TEXT_ALIGN_CENTER); // Align text to centre of the OLED display
-    oled.setFont(DejaVu_Sans_40);             // Set the font for the text
-    oled.drawString(64, 10, batteryText);     // Draw the time on the display
-    oled.display();
-    delay(1000);
+  
+    //oled.setTextAlignment(TEXT_ALIGN_CENTER); // Align text to centre of the OLED display
+    //oled.setFont(DejaVu_Sans_40);             // Set the font for the text
+    //oled.drawString(64, 10, batteryText);     // Draw the time on the display
+    //oled.display();
+    //delay(1000);
     showTime(); // ...so show the time on the OLED display
     break;      // Exit Switch
   default:      // We weren't woken by timer or touch...
@@ -81,6 +74,17 @@ void setup()
 
   while ((endtime - starttime) <= DISPLAY_ON_DURATION)
   {                    // do this loop for up to 5000mS (or value of "DISPLAY_ON_DURATION")
+      if (vBAT <= 4.00F)
+    { // If vBAT is less than or equal to 4.00V...
+      Serial.println("DEBUG: Servo set to 90 degrees");
+      chargeServo.write(90); // ...raise charge flag
+    }
+    else
+    { // ...otherwise...
+      Serial.println("DEBUG: Servo set to 0 degrees");
+      chargeServo.write(0);  // ...lower the charge flag
+    }
+    
     encoder.service(); // Poll the rotary encoder
     showTime();        // Display the time on the OLED display
 

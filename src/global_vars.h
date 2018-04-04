@@ -13,7 +13,7 @@
 #define ALARM_BUZZER_DUTYCYCLE 50         // Duty Cycle for the buzzer - up to 255.  Can be used for adjusting the volume of the buzzer
 #define INBUILT_LED 5                     // Built in LED
 #define BATTERY_READ_PIN 35               // Pin used to read battery voltage
-#define CHARGE_SERVO_PIN 25               // Pin for Servo
+#define CHARGE_SERVO_PIN 23               // Pin for Servo
 #define CHARGE_SERVO_CHANNEL 1            // Channel for Servo
 
 // Global variables

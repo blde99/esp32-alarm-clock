@@ -31,7 +31,7 @@ void setup()
   pinMode(ENCODER_CW_SET_ALARM, INPUT);                                        // Set pin 33 as input
   pinMode(ENCODER_CCW_SET_ALARM, INPUT);                                       // Set pin 32 as input
   encoder.setAccelerationEnabled(true);                                        // Enable acceleration on the rotary encoder
-  chargeServo.attach(CHARGE_SERVO_PIN,                                         // Attach servo on pin 23...
+  chargeServo.attach(CHARGE_SERVO_PIN,                                         // Attach servo on pin 25...
                      CHARGE_SERVO_CHANNEL);                                    // ...using channel 1
   Serial.print("Clock speed: ");                                               // Debug
   Serial.println(ESP.getCpuFreqMHz());                                         // Debug

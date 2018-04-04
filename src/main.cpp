@@ -40,7 +40,8 @@ void setup()
   displayInit();                            // Initialise the OLED display
   Serial.println("Init RTC");               // Debug
   rtcInit();                                // Initialise the DS1307 RTC
-  chargeServo.attach(CHARGE_SERVO_PIN);
+  chargeServo.attach(CHARGE_SERVO_PIN, 
+                     CHARGE_SERVO_CHANNEL);
   Serial.println("Getting alarm settings"); // Debug
   getAlarmSettings();                       // Retrieve alarm settings from preferences an store them
 

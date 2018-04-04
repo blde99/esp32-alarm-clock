@@ -14,6 +14,7 @@
 #define INBUILT_LED 5                     // Built in LED
 #define BATTERY_READ_PIN 35               // Pin used to read battery voltage
 #define CHARGE_SERVO_PIN 23               // Pin for Servo
+#define CHARGE_SERVO_CHANNEL 1
 
 // Global variables
 uint8_t encoderButtonState;                    // Used to figure out if the rotary encoder button was clicked, held, etc.

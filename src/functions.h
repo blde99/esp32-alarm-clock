@@ -516,3 +516,19 @@ float getBatteryVoltage()
   float vBAT = (127.0f / 100.0f) * 3.30f * float(analogRead(BATTERY_READ_PIN)) / 4095.0f; // Calculates the voltage left in the battery
   return vBAT;                                                                            // Return the voltage value
 }
+
+void chargeFlagControl(void *pvParameters)
+{
+    chargeServo.attach(CHARGE_SERVO_PIN, CHARGE_SERVO_CHANNEL);
+    String taskMessage = "Task running on core ";
+    taskMessage = taskMessage + xPortGetCoreID();
+    String taskMessage2 = "Setting servo to ";
+    taskMessage2 = taskMessage2 + (int)pvParameters + " degrees";
+
+    Serial.println(taskMessage);
+    Serial.println(taskMessage2);
+    chargeServo.write((int)pvParameters);
+    delay(1000);
+    chargeServo.detach();
+    vTaskDelete(NULL);
+}

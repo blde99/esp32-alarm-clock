@@ -74,12 +74,26 @@ void setup()
   if (vBAT <= 4.00F)
   {                                                   // If vBAT is less than or equal to 4.00V...
     Serial.println("DEBUG: Servo set to 90 degrees"); // Debug
-    chargeServo.write(90);                            // ...raise charge flag
+    xTaskCreatePinnedToCore(                          // ...raise the charge flag
+        chargeFlagControl,                            /* Function to implement the task */
+        "chargeFlagControl",                          /* Name of the task */
+        10000,                                        /* Stack size in words */
+        (void *)flagUp,                               /* Task input parameter */
+        0,                                            /* Priority of the task */
+        NULL,                                         /* Task handle. */
+        taskCore);                                    /* Core where the task should run */
   }
   else
   {                                                  // ...otherwise...
     Serial.println("DEBUG: Servo set to 0 degrees"); // Debug
-    chargeServo.write(0);                            // ...lower the charge flag
+    xTaskCreatePinnedToCore(                         // ...lower the charge flag
+        chargeFlagControl,                           /* Function to implement the task */
+        "chargeFlagControl",                         /* Name of the task */
+        10000,                                       /* Stack size in words */
+        (void *)flagDown,                            /* Task input parameter */
+        0,                                           /* Priority of the task */
+        NULL,                                        /* Task handle. */
+        taskCore);                                   /* Core where the task should run */
   }
 
   unsigned long starttime, endtime; // Declare the variables required for the 5 second loop
@@ -87,7 +101,7 @@ void setup()
   endtime = starttime;              // Set end time to starttime
 
   while ((endtime - starttime) <= DISPLAY_ON_DURATION)
-  { // do this loop for value of "DISPLAY_ON_DURATION"
+  {                    // do this loop for value of "DISPLAY_ON_DURATION"
     encoder.service(); // Poll the rotary encoder
     showTime();        // Display the time on the OLED display
 

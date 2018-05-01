@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <Preferences.h>  // Library for storing data that needs to survive a reboot
 #include "ClickEncoder.h" // Library to read inputs from the rotary encoder
-// #include <Servo.h>        // Library for Servo
 
 // Includes for OLED screen
 #include "images.h"  // Include file containing custom images for OLED screen
@@ -20,6 +19,7 @@ void setup()
 {
   String batteryText; // String variable to hold text for battery voltage
   float vBAT;         // Float variable to hold battery voltage
+  byte vBATSampleSize = 5;
 
   Serial.begin(115200);         // Setup Serial output
   pinMode(INBUILT_LED, OUTPUT); // Set pin 5 as output - this pin also has the built in LED
@@ -46,7 +46,13 @@ void setup()
   Serial.println("Getting alarm settings"); // Debug
   getAlarmSettings();                       // Retrieve alarm settings from preferences an store them
 
-  vBAT = ceilf(getBatteryVoltage() * 100) / 100; // Work out battery voltage from DAC and round to 2 decimal places
+    for (byte i = 0; i < vBATSampleSize; i++) // Average samples together to minimize false readings
+    {
+      vBAT += ceilf(getBatteryVoltage() * 100) / 100; // Work out battery voltage from DAC and round to 2 decimal places
+    }
+    vBAT /= vBATSampleSize;
+
+  
   batteryText = String(vBAT) + "V";              // Populate the BatteryText variable
   Serial.print("Battery Voltage: ");             // Debug (Prints battery voltage on Serial, this will be displayed somehow)
   Serial.println(batteryText);                   // Debug
@@ -59,20 +65,19 @@ void setup()
 
     oled.setTextAlignment(TEXT_ALIGN_CENTER); // Align text to centre of the OLED display
     oled.setFont(DejaVu_Sans_40);             // Set the font for the text
-    oled.drawString(64, 10, batteryText);     // Draw the time on the display
-    oled.display();                           // Display Voltage
-    delay(1000);                              // Keep on screen for 1 sec
-    showTime();                               // ...so show the time on the OLED display
-    break;                                    // Exit Switch
-  default:                                    // We weren't woken by timer or touch...
-    break;                                    // Do Nothing
-  }
-
-  if (vBAT <= 3.90F)
-  {                                // If vBAT is less than or equal to 3.90V...
-    drawBattChargeRequiredImage(); // ...Draw the Battery Charge Required icon
-    oled.display();                // Update the display
-    delay(2000);                   // Hold icon on screen for 2 seconds
+    // oled.drawString(64, 10, batteryText);     // Draw the time on the display
+    // oled.display();                           // Display Voltage
+    // delay(1000);                              // Keep on screen for 1 sec
+    if (vBAT <= 3.80F)
+    {                                // If vBAT is less than or equal to 3.90V...
+      drawBattChargeRequiredImage(); // ...Draw the Battery Charge Required icon
+      oled.display();                // Update the display
+      delay(2000);                   // Hold icon on screen for 2 seconds
+    }
+    showTime(); // ...so show the time on the OLED display
+    break;      // Exit Switch
+  default:      // We weren't woken by timer or touch...
+    break;      // Do Nothing
   }
 
   unsigned long starttime, endtime; // Declare the variables required for the 5 second loop

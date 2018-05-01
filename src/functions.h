@@ -216,7 +216,7 @@ void drawSuccessImage()
   oled.display();
 }
 
-// Function to draw the success image on the OLED if the clock succeeded in setting the time by NTP
+// Function to draw the battery charge required image on the OLED if the clock battery is low
 // Parameters:
 // none
 // Returns:

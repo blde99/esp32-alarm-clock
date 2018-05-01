@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <Preferences.h>  // Library for storing data that needs to survive a reboot
 #include "ClickEncoder.h" // Library to read inputs from the rotary encoder
-#include <Servo.h>        // Library for Servo
+// #include <Servo.h>        // Library for Servo
 
 // Includes for OLED screen
 #include "images.h"  // Include file containing custom images for OLED screen
@@ -31,8 +31,6 @@ void setup()
   pinMode(ENCODER_CW_SET_ALARM, INPUT);                                        // Set pin 33 as input
   pinMode(ENCODER_CCW_SET_ALARM, INPUT);                                       // Set pin 32 as input
   encoder.setAccelerationEnabled(true);                                        // Enable acceleration on the rotary encoder
-  chargeServo.attach(CHARGE_SERVO_PIN,                                         // Attach servo on pin 23...
-                     CHARGE_SERVO_CHANNEL);                                    // ...using channel 1
   Serial.print("Clock speed: ");                                               // Debug
   Serial.println(ESP.getCpuFreqMHz());                                         // Debug
   Serial.println();                                                            // Debug
@@ -40,14 +38,13 @@ void setup()
   Serial.print("Encoder acceleration is ");                                    // Debug
   Serial.println((encoder.getAccelerationEnabled()) ? "enabled" : "disabled"); // Debug
 
-  Serial.println("Init Display");                                         // Debug
-  displayInit();                                                          // Initialise the OLED display
-  Serial.println("Init RTC");                                             // Debug
-  rtcInit();                                                              // Initialise the DS1307 RTC
-  Serial.print("Servo is ");                                              // Debug
-  Serial.println((chargeServo.attached()) ? "attached" : "not attached"); // Debug
-  Serial.println("Getting alarm settings");                               // Debug
-  getAlarmSettings();                                                     // Retrieve alarm settings from preferences an store them
+  Serial.println("Init Display");           // Debug
+  displayInit();                            // Initialise the OLED display
+  Serial.println("Init RTC");               // Debug
+  rtcInit();                                // Initialise the DS1307 RTC
+  Serial.print("Servo is ");                // Debug
+  Serial.println("Getting alarm settings"); // Debug
+  getAlarmSettings();                       // Retrieve alarm settings from preferences an store them
 
   vBAT = ceilf(getBatteryVoltage() * 100) / 100; // Work out battery voltage from DAC and round to 2 decimal places
   batteryText = String(vBAT) + "V";              // Populate the BatteryText variable
@@ -71,29 +68,11 @@ void setup()
     break;                                    // Do Nothing
   }
 
-  if (vBAT <= 4.00F)
-  {                                                   // If vBAT is less than or equal to 4.00V...
-    Serial.println("DEBUG: Servo set to 90 degrees"); // Debug
-    xTaskCreatePinnedToCore(                          // ...raise the charge flag
-        chargeFlagControl,                            /* Function to implement the task */
-        "chargeFlagControl",                          /* Name of the task */
-        10000,                                        /* Stack size in words */
-        (void *)flagUp,                               /* Task input parameter */
-        0,                                            /* Priority of the task */
-        NULL,                                         /* Task handle. */
-        taskCore);                                    /* Core where the task should run */
-  }
-  else
-  {                                                  // ...otherwise...
-    Serial.println("DEBUG: Servo set to 0 degrees"); // Debug
-    xTaskCreatePinnedToCore(                         // ...lower the charge flag
-        chargeFlagControl,                           /* Function to implement the task */
-        "chargeFlagControl",                         /* Name of the task */
-        10000,                                       /* Stack size in words */
-        (void *)flagDown,                            /* Task input parameter */
-        0,                                           /* Priority of the task */
-        NULL,                                        /* Task handle. */
-        taskCore);                                   /* Core where the task should run */
+  if (vBAT <= 3.90F)
+  {                                // If vBAT is less than or equal to 3.90V...
+    drawBattChargeRequiredImage(); // ...Draw the Battery Charge Required icon
+    oled.display();                // Update the display
+    delay(2000);                   // Hold icon on screen for 2 seconds
   }
 
   unsigned long starttime, endtime; // Declare the variables required for the 5 second loop

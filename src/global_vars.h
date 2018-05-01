@@ -44,11 +44,3 @@ RTC_DATA_ATTR bool firstStartComplete = false; // Will be set to true by startSe
 TimeChangeRule BST = {"BST", Last, Sun, Mar, 2, 60}; //Central European Summer Time
 TimeChangeRule GMT = {"GMT", Last, Sun, Oct, 2, 0};  //Central European Standard Time
 Timezone UK(BST, GMT);
-
-static int taskCore = 0;
-static Servo chargeServo;
-static int flagUp = 90;
-static int flagDown = 0;
-
-RTC_DATA_ATTR bool batteryChargeRequired = false;
-RTC_DATA_ATTR bool batteryChargeFlagRaised = false;

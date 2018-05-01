@@ -216,6 +216,20 @@ void drawSuccessImage()
   oled.display();
 }
 
+// Function to draw the success image on the OLED if the clock succeeded in setting the time by NTP
+// Parameters:
+// none
+// Returns:
+// none
+void drawBattChargeRequiredImage()
+{
+  // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
+  // on how to create xbm files
+  oled.clear();
+  oled.drawXbm(40, 8, batt_charge_required_width, batt_charge_required_height, batt_charge_required_bits);
+  oled.display();
+}
+
 // Function to connect and get the time over WiFi
 // Parameters:
 // none
@@ -515,20 +529,4 @@ float getBatteryVoltage()
 {
   float vBAT = (127.0f / 100.0f) * 3.30f * float(analogRead(BATTERY_READ_PIN)) / 4095.0f; // Calculates the voltage left in the battery
   return vBAT;                                                                            // Return the voltage value
-}
-
-void chargeFlagControl(void *pvParameters)
-{
-    chargeServo.attach(CHARGE_SERVO_PIN, CHARGE_SERVO_CHANNEL);
-    String taskMessage = "Task running on core ";
-    taskMessage = taskMessage + xPortGetCoreID();
-    String taskMessage2 = "Setting servo to ";
-    taskMessage2 = taskMessage2 + (int)pvParameters + " degrees";
-
-    Serial.println(taskMessage);
-    Serial.println(taskMessage2);
-    chargeServo.write((int)pvParameters);
-    delay(1000);
-    chargeServo.detach();
-    vTaskDelete(NULL);
 }

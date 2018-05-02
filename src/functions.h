@@ -216,17 +216,31 @@ void drawSuccessImage()
   oled.display();
 }
 
+// Function to draw the battery charge required image on the OLED if the clock battery is half full
+// Parameters:
+// none
+// Returns:
+// none
+void drawBattHalfLevelImage()
+{
+  // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
+  // on how to create xbm files
+  oled.clear();
+  oled.drawXbm(40, 8, batt_half_level_width, batt_half_level_height, batt_half_level_bits);
+  oled.display();
+}
+
 // Function to draw the battery charge required image on the OLED if the clock battery is low
 // Parameters:
 // none
 // Returns:
 // none
-void drawBattChargeRequiredImage()
+void drawBattLowLevelImage()
 {
   // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
   // on how to create xbm files
   oled.clear();
-  oled.drawXbm(40, 8, batt_charge_required_width, batt_charge_required_height, batt_charge_required_bits);
+  oled.drawXbm(40, 8, batt_low_level_width, batt_low_level_height, batt_low_level_bits);
   oled.display();
 }
 
@@ -283,11 +297,6 @@ void get_Time()
     Serial.println("Failed to connect!"); // If we failed to connect to WiFi, draw the error icon on the OLED display
     drawErrorImage();
     delay(500);
-    // oled.setFont(ArialMT_Plain_16);
-    // oled.setTextAlignment(TEXT_ALIGN_CENTER);
-    // oled.drawStringMaxWidth(64,10,120,"Could not connect to WiFi!");
-    // oled.display();
-    // delay(500);
   }
 }
 

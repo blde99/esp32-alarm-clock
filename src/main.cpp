@@ -46,16 +46,15 @@ void setup()
   Serial.println("Getting alarm settings"); // Debug
   getAlarmSettings();                       // Retrieve alarm settings from preferences an store them
 
-    for (byte i = 0; i < vBATSampleSize; i++) // Average samples together to minimize false readings
-    {
-      vBAT += ceilf(getBatteryVoltage() * 100) / 100; // Work out battery voltage from DAC and round to 2 decimal places
-    }
-    vBAT /= vBATSampleSize;
+  for (byte i = 0; i < vBATSampleSize; i++) // Average samples together to minimize false readings
+  {
+    vBAT += ceilf(getBatteryVoltage() * 100) / 100; // Work out battery voltage from DAC and round to 2 decimal places
+  }
+  vBAT /= vBATSampleSize;
 
-  
-  batteryText = String(vBAT) + "V";              // Populate the BatteryText variable
-  Serial.print("Battery Voltage: ");             // Debug (Prints battery voltage on Serial, this will be displayed somehow)
-  Serial.println(batteryText);                   // Debug
+  batteryText = String(vBAT) + "V";  // Populate the BatteryText variable
+  Serial.print("Battery Voltage: "); // Debug (Prints battery voltage on Serial, this will be displayed somehow)
+  Serial.println(batteryText);       // Debug
 
   switch (get_wakeup_reason())
   {        // Get wakeup reason
@@ -68,11 +67,15 @@ void setup()
     // oled.drawString(64, 10, batteryText);     // Draw the time on the display
     // oled.display();                           // Display Voltage
     // delay(1000);                              // Keep on screen for 1 sec
-    if (vBAT <= 3.80F)
-    {                                // If vBAT is less than or equal to 3.90V...
-      drawBattChargeRequiredImage(); // ...Draw the Battery Charge Required icon
-      oled.display();                // Update the display
-      delay(2000);                   // Hold icon on screen for 2 seconds
+    if ((vBAT > 3.50F) && (vBAT <= 3.80F))
+    {                           // If vBAT is less than or equal to 3.80v but more than 3.50v...
+      drawBattHalfLevelImage(); // ...show that the battery is half full
+      delay(2000);              // Hold icon on screen for 2 seconds
+    }
+    else if (vBAT <= 3.50F)
+    {                          // or if vBAT is less than 3.50v
+      drawBattLowLevelImage(); // ...show that the battery is low
+      delay(2000);             // Hold icon on screen for 2 seconds
     }
     showTime(); // ...so show the time on the OLED display
     break;      // Exit Switch

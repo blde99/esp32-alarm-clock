@@ -230,20 +230,6 @@ void drawBattHalfLevelImage()
   oled.display();
 }
 
-// Function to draw the battery charge required image on the OLED if the clock battery is low
-// Parameters:
-// none
-// Returns:
-// none
-void drawBattLowLevelImage()
-{
-  // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
-  // on how to create xbm files
-  oled.clear();
-  oled.drawXbm(40, 8, batt_low_level_width, batt_low_level_height, batt_low_level_bits);
-  oled.display();
-}
-
 // Function to connect and get the time over WiFi
 // Parameters:
 // none

@@ -63,11 +63,11 @@ void setup()
   case 4:  // We were woken by touchpad...
 
     oled.setTextAlignment(TEXT_ALIGN_CENTER); // Align text to centre of the OLED display
-    oled.setFont(DejaVu_Sans_40);             // Set the font for the text
+    // oled.setFont(DejaVu_Sans_40);             // Set the font for the text
     // oled.drawString(64, 10, batteryText);     // Draw the time on the display
     // oled.display();                           // Display Voltage
     // delay(1000);                              // Keep on screen for 1 sec
-    if (vBAT > 3.20F)
+    if (vBAT <= 3.20F)
     {                           // If vBAT is less than or equal to 3.80v but more than 3.50v...
       drawBattHalfLevelImage(); // ...show that the battery is half full
       delay(2000);              // Hold icon on screen for 2 seconds

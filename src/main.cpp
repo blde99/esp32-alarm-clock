@@ -67,15 +67,10 @@ void setup()
     // oled.drawString(64, 10, batteryText);     // Draw the time on the display
     // oled.display();                           // Display Voltage
     // delay(1000);                              // Keep on screen for 1 sec
-    if ((vBAT > 3.50F) && (vBAT <= 3.80F))
+    if (vBAT > 3.20F)
     {                           // If vBAT is less than or equal to 3.80v but more than 3.50v...
       drawBattHalfLevelImage(); // ...show that the battery is half full
       delay(2000);              // Hold icon on screen for 2 seconds
-    }
-    else if (vBAT <= 3.50F)
-    {                          // or if vBAT is less than 3.50v
-      drawBattLowLevelImage(); // ...show that the battery is low
-      delay(2000);             // Hold icon on screen for 2 seconds
     }
     showTime(); // ...so show the time on the OLED display
     break;      // Exit Switch

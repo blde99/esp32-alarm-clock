@@ -449,52 +449,63 @@ bool timeCheck()
 // none
 // Returns:
 // none
+// void triggerAlarm()
+// {
+//   unsigned long triggerTime = millis();
+//   const int displayToggleTime = 1000; // 1 second
+//   bool displayState = true;
+//   float touchSensorReading = 0; // Read the analog value for the touch sensor
+//   byte touchSampleSize = 2;     // Number of samples we want to take
+
+//   ledcSetup(ALARM_BUZZER_CHANNEL, // Set up LEDC
+//             ALARM_BUZZER_FREQUENCY,
+//             ALARM_BUZZER_RESOLUTION);
+//   ledcAttachPin(ALARM_BUZZER_PIN, ALARM_BUZZER_CHANNEL); // Attach LEDC to buzzer pin
+
+//   while (!alarmAcknowledged)
+//   {                                            // While the alarm has not been acknowledged, carry out the alarm notification
+//     for (byte i = 0; i < touchSampleSize; i++) // Average samples together to minimize false readings
+//     {
+//       touchSensorReading += touchRead(TOUCH_PIN); // We sample the touch pin here
+//     }
+//     touchSensorReading /= touchSampleSize;
+//     if (touchSensorReading < TOUCHPIN_SENSITIVITY_THRESHOLD)
+//     {                           // If the "TOUCH_PIN" has been triggered...
+//       alarmAcknowledged = true; // ...set "alarmAcknowledged" to true
+//     }
+//     if ((millis() - triggerTime) >= displayToggleTime)
+//     {                               // If a second has passed...
+//       displayState = !displayState; // ...toggle "displayState"...
+//       triggerTime = millis();       // ...and start the count again.
+//     }
+//     if (!displayState)
+//     {                                     // If "displayState" is FALSE...
+//       oled.displayOff();                  // ...turn off the display...
+//       ledcWriteTone(ALARM_BUZZER_CHANNEL, // ...and turn off the buzzer.
+//                     0);
+//     }
+//     else
+//     {                   // If "displayState" is TRUE...
+//       oled.displayOn(); // ...turn on the display...
+//       ledcWriteTone(ALARM_BUZZER_CHANNEL,
+//                     ALARM_BUZZER_FREQUENCY);                   // ...and sound the buzzer
+//       ledcWrite(ALARM_BUZZER_CHANNEL, ALARM_BUZZER_DUTYCYCLE); // At the desired volume
+//     }
+//   }
+//   oled.displayOn();                       // When the alarm has been acknowledged, turn on the display...
+//   ledcWriteTone(ALARM_BUZZER_CHANNEL, 0); // ...and turn off the buzzer.
+//   ledcDetachPin(ALARM_BUZZER_PIN);
+// }
+
 void triggerAlarm()
 {
-  unsigned long triggerTime = millis();
-  const int displayToggleTime = 1000; // 1 second
-  bool displayState = true;
-  float touchSensorReading = 0; // Read the analog value for the touch sensor
-  byte touchSampleSize = 2;     // Number of samples we want to take
-
-  ledcSetup(ALARM_BUZZER_CHANNEL, // Set up LEDC
-            ALARM_BUZZER_FREQUENCY,
-            ALARM_BUZZER_RESOLUTION);
-  ledcAttachPin(ALARM_BUZZER_PIN, ALARM_BUZZER_CHANNEL); // Attach LEDC to buzzer pin
-
   while (!alarmAcknowledged)
-  {                                            // While the alarm has not been acknowledged, carry out the alarm notification
-    for (byte i = 0; i < touchSampleSize; i++) // Average samples together to minimize false readings
-    {
-      touchSensorReading += touchRead(TOUCH_PIN); // We sample the touch pin here
-    }
-    touchSensorReading /= touchSampleSize;
-    if (touchSensorReading < TOUCHPIN_SENSITIVITY_THRESHOLD)
-    {                           // If the "TOUCH_PIN" has been triggered...
-      alarmAcknowledged = true; // ...set "alarmAcknowledged" to true
-    }
-    if ((millis() - triggerTime) >= displayToggleTime)
-    {                               // If a second has passed...
-      displayState = !displayState; // ...toggle "displayState"...
-      triggerTime = millis();       // ...and start the count again.
-    }
-    if (!displayState)
-    {                                     // If "displayState" is FALSE...
-      oled.displayOff();                  // ...turn off the display...
-      ledcWriteTone(ALARM_BUZZER_CHANNEL, // ...and turn off the buzzer.
-                    0);
-    }
-    else
-    {                   // If "displayState" is TRUE...
-      oled.displayOn(); // ...turn on the display...
-      ledcWriteTone(ALARM_BUZZER_CHANNEL,
-                    ALARM_BUZZER_FREQUENCY);                   // ...and sound the buzzer
-      ledcWrite(ALARM_BUZZER_CHANNEL, ALARM_BUZZER_DUTYCYCLE); // At the desired volume
-    }
+  {   
+    oled.setTextAlignment(TEXT_ALIGN_CENTER);                                                 // Align text to centre of the OLED display
+    oled.setFont(DejaVu_Sans_40);                                                             // Set the font for the text
+    oled.drawString(64, 10, String(touchRead(TOUCH_PIN)));                                                      // Draw the time on the display
+    oled.display();
   }
-  oled.displayOn();                       // When the alarm has been acknowledged, turn on the display...
-  ledcWriteTone(ALARM_BUZZER_CHANNEL, 0); // ...and turn off the buzzer.
-  ledcDetachPin(ALARM_BUZZER_PIN);
 }
 
 // Function to flash the in built led on first boot.

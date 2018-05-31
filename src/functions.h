@@ -34,22 +34,22 @@ void rtcInit()
 {
   if (!rtc.begin())
   {
-    Serial.println("Couldn't find RTC module!"); // Print fail message if RTC can't be found
-    oled.setFont(ArialMT_Plain_16);
-    oled.setTextAlignment(TEXT_ALIGN_CENTER);
-    oled.drawStringMaxWidth(64, 10, 120, "RTC not Found!");
-    oled.display();
+    Serial.println("Couldn't find RTC module!");            // Print fail message if RTC can't be found
+    oled.setFont(ArialMT_Plain_16);                         // Set OLED font
+    oled.setTextAlignment(TEXT_ALIGN_CENTER);               // Set OLED text alignment
+    oled.drawStringMaxWidth(64, 10, 120, "RTC not Found!"); // Put message on screen
+    oled.display();                                         // Show message on screen
     while (1)
       ; // Loop forever
   }
-  if (!rtc.isrunning())
+  if (!rtc.lostPower())
   {
-    Serial.println("RTC module is not running!"); // Print fail message if RTC can be found but the time is not set
-    oled.setFont(ArialMT_Plain_16);
-    oled.setTextAlignment(TEXT_ALIGN_CENTER);
-    oled.drawStringMaxWidth(64, 10, 120, "RTC not Running!");
-    oled.display();
-    delay(5000);
+    Serial.println("RTC module is not set due to power loss!"); // Print fail message if RTC can be found but the time is not set
+    oled.setFont(ArialMT_Plain_16);                             // Set OLED font
+    oled.setTextAlignment(TEXT_ALIGN_CENTER);                   // Set OLED text alignment
+    oled.drawStringMaxWidth(64, 10, 120, "RTC not Set!");       // Put message on screen
+    oled.display();                                             // Show message on screen...
+    delay(5000);                                                // ...for 5 secs
   }
 }
 
@@ -269,20 +269,20 @@ void get_Time()
     if (returnedTime != 0)
     {                           // If we were successful getting the time...
       rtc.adjust(returnedTime); // ...set the DS1307 RTC module
-      drawSuccessImage();       // Draw the success icon on the OLED display
-      delay(500);
+      drawSuccessImage();       // Draw the success icon on the OLED display...
+      delay(500);               // ...and show for 500ms
     }
     else
     {
       drawErrorImage(); // If we failed to get the time, draw the error icon on the OLED display
-      delay(500);
+      delay(500);       // ...and show for 500ms
     }
   }
   else
   {
-    Serial.println("Failed to connect!"); // If we failed to connect to WiFi, draw the error icon on the OLED display
-    drawErrorImage();
-    delay(500);
+    Serial.println("Failed to connect!"); // If we failed to connect to WiFi...
+    drawErrorImage();                     // ...draw the error icon on the OLED display
+    delay(500);                           // ...and show for 500ms
   }
 }
 
@@ -336,11 +336,11 @@ int get_wakeup_reason()
 {
   esp_sleep_wakeup_cause_t wakeup_reason;
 
-  wakeup_reason = esp_sleep_get_wakeup_cause();
+  wakeup_reason = esp_sleep_get_wakeup_cause();  // Store the wakeup reason code
 
   switch (wakeup_reason)
   {
-  case 1:
+  case 1: // Woken by external interrupt
     Serial.println("Wakeup caused by external signal using RTC_IO");
     return 1;
     break;
@@ -348,11 +348,11 @@ int get_wakeup_reason()
     Serial.println("Wakeup caused by external signal using RTC_CNTL");
     return 2;
     break;
-  case 3:
+  case 3: // Woken by timer
     Serial.println("Wakeup caused by timer");
     return 3;
     break;
-  case 4:
+  case 4: // Woken by touchpad
     Serial.println("Wakeup caused by touchpad");
     return 4;
     break;
@@ -360,7 +360,7 @@ int get_wakeup_reason()
     Serial.println("Wakeup caused by ULP program");
     return 5;
     break;
-  default:
+  default: // Don't know why we were woken
     Serial.println("Wakeup was not caused by deep sleep");
     return 0;
     break;
@@ -444,7 +444,7 @@ bool timeCheck()
   }
 }
 
-// Function to handle the alarm trigger task.
+// Function to handle the alarm trigger task. Program stays in this function until the user acknowledges the alarm
 // Parameters:
 // none
 // Returns:
@@ -452,32 +452,31 @@ bool timeCheck()
 void triggerAlarm()
 {
   unsigned long triggerTime = millis();
-  const int displayToggleTime = 1000; // 1 second
-  bool displayState = true;
-  uint16_t touchSensorReading; // Read the analog value for the touch sensor
-  byte touchSampleSize = 3;     // Number of samples we want to take
+  const int displayToggleTime = 500; // 500ms
+  bool displayState = true;          // Set initial displaystate
+  uint16_t touchSensorReading;       // Read the analog value for the touch sensor
+  byte touchSampleSize = 3;          // Number of samples we want to take
 
-  ledcSetup(ALARM_BUZZER_CHANNEL, // Set up LEDC
-            ALARM_BUZZER_FREQUENCY,
-            ALARM_BUZZER_RESOLUTION);
+  ledcSetup(ALARM_BUZZER_CHANNEL,                        // Set up LEDC
+            ALARM_BUZZER_FREQUENCY,                      // Set LEDC frequency...
+            ALARM_BUZZER_RESOLUTION);                    // //and duty cycle
   ledcAttachPin(ALARM_BUZZER_PIN, ALARM_BUZZER_CHANNEL); // Attach LEDC to buzzer pin
 
   while (!alarmAcknowledged)
-  {           
-    touchSensorReading = 0;                                 // While the alarm has not been acknowledged, carry out the alarm notification
+  {
+    touchSensorReading = 0;                    // While the alarm has not been acknowledged, carry out the alarm notification
     for (byte i = 0; i < touchSampleSize; i++) // Average samples together to minimize false readings
     {
-      touchSensorReading += touchRead(TOUCH_PIN); // We sample the touch pin here
+      touchSensorReading += touchRead(TOUCH_PIN); // We sample the touch pin here...
     }
-    touchSensorReading /= touchSampleSize;
-    Serial.println(String(touchSensorReading));
+    touchSensorReading /= touchSampleSize; // ...then take an average,
 
     if (touchSensorReading < TOUCHPIN_SENSITIVITY_THRESHOLD)
     {                           // If the "TOUCH_PIN" has been triggered...
       alarmAcknowledged = true; // ...set "alarmAcknowledged" to true
     }
     if ((millis() - triggerTime) >= displayToggleTime)
-    {                               // If a second has passed...
+    {                               // If a 500ms has passed...
       displayState = !displayState; // ...toggle "displayState"...
       triggerTime = millis();       // ...and start the count again.
     }
@@ -488,29 +487,17 @@ void triggerAlarm()
                     0);
     }
     else
-    {                   // If "displayState" is TRUE...
-      oled.displayOn(); // ...turn on the display...
-      ledcWriteTone(ALARM_BUZZER_CHANNEL,
-                    ALARM_BUZZER_FREQUENCY);                   // ...and sound the buzzer
-      ledcWrite(ALARM_BUZZER_CHANNEL, ALARM_BUZZER_DUTYCYCLE); // At the desired volume
+    {                                                          // If "displayState" is TRUE...
+      oled.displayOn();                                        // ...turn on the display...
+      ledcWriteTone(ALARM_BUZZER_CHANNEL,                      // ...and sound the buzzer...
+                    ALARM_BUZZER_FREQUENCY);                   // ...at the desired frequency..
+      ledcWrite(ALARM_BUZZER_CHANNEL, ALARM_BUZZER_DUTYCYCLE); // ...and the desired volume
     }
   }
   oled.displayOn();                       // When the alarm has been acknowledged, turn on the display...
   ledcWriteTone(ALARM_BUZZER_CHANNEL, 0); // ...and turn off the buzzer.
-  ledcDetachPin(ALARM_BUZZER_PIN);
+  ledcDetachPin(ALARM_BUZZER_PIN);        // Detach the buzzer pin (stops leaky noise)
 }
-
-// void triggerAlarm()
-// {
-//   while (!alarmAcknowledged)
-//   {  
-//     oled.clear(); 
-//     oled.setTextAlignment(TEXT_ALIGN_CENTER);                                                 // Align text to centre of the OLED display
-//     oled.setFont(DejaVu_Sans_40);                                                             // Set the font for the text
-//     oled.drawString(64, 10, String(touchRead(TOUCH_PIN)));                                                      // Draw the time on the display
-//     oled.display();
-//   }
-// }
 
 // Function to flash the in built led on first boot.
 // Parameters:

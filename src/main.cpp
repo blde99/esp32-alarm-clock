@@ -17,9 +17,9 @@
 
 void setup()
 {
-  String batteryText; // String variable to hold text for battery voltage
-  float vBAT;         // Float variable to hold battery voltage
-  byte vBATSampleSize = 5;
+  String batteryText;      // String variable to hold text for battery voltage
+  float vBAT = 0;          // Float variable to hold battery voltage
+  byte vBATSampleSize = 5; // How many time we sample the battery
 
   Serial.begin(115200);         // Setup Serial output
   pinMode(INBUILT_LED, OUTPUT); // Set pin 5 as output - this pin also has the built in LED
@@ -122,7 +122,6 @@ void setup()
     uint64_t secsToSleep = secsTillAlarm(rtc.now()); // ...figure out how long (in seconds) till the next alarm
     uint64_t iTimeToSleep = secsToSleep * 1000000;   // Convert that to microseconds...
     esp_sleep_enable_timer_wakeup(iTimeToSleep);     // ...and set the ESP32 sleep timer to that number
-    char str[21];
 
     Serial.print("Will sleep for ");     // Debug
     Serial.printf("%llu", secsToSleep);  // Debug

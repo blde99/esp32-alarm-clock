@@ -1,8 +1,8 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 by Daniel Eichhorn
- * Copyright (c) 2016 by Fabrice Weinberg
+ * Copyright (c) 2018 by ThingPulse, Daniel Eichhorn
+ * Copyright (c) 2018 by Fabrice Weinberg
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * Credits for parts of this code go to Mike Rankin. Thank you so much for sharing!
+ * ThingPulse invests considerable time and money to develop these open source libraries.
+ * Please support us by buying our products (and not the clones) from
+ * https://thingpulse.com
+ *
  */
 
 #ifndef SSD1306Wire_h
@@ -36,9 +39,12 @@ class SSD1306Wire : public OLEDDisplay {
       uint8_t             _address;
       uint8_t             _sda;
       uint8_t             _scl;
+      bool                _doI2cAutoInit = false;
 
   public:
-    SSD1306Wire(uint8_t _address, uint8_t _sda, uint8_t _scl) {
+    SSD1306Wire(uint8_t _address, uint8_t _sda, uint8_t _scl, OLEDDISPLAY_GEOMETRY g = GEOMETRY_128_64) {
+      setGeometry(g);
+
       this->_address = _address;
       this->_sda = _sda;
       this->_scl = _scl;
@@ -53,6 +59,8 @@ class SSD1306Wire : public OLEDDisplay {
     }
 
     void display(void) {
+      initI2cIfNeccesary();
+      const int x_offset = (128 - this->width()) / 2;
       #ifdef OLEDDISPLAY_DOUBLE_BUFFER
         uint8_t minBoundY = ~0;
         uint8_t maxBoundY = 0;
@@ -63,9 +71,9 @@ class SSD1306Wire : public OLEDDisplay {
 
         // Calculate the Y bounding box of changes
         // and copy buffer[pos] to buffer_back[pos];
-        for (y = 0; y < (DISPLAY_HEIGHT / 8); y++) {
-          for (x = 0; x < DISPLAY_WIDTH; x++) {
-           uint16_t pos = x + y * DISPLAY_WIDTH;
+        for (y = 0; y < (this->height() / 8); y++) {
+          for (x = 0; x < this->width(); x++) {
+           uint16_t pos = x + y * this->width();
            if (buffer[pos] != buffer_back[pos]) {
              minBoundY = _min(minBoundY, y);
              maxBoundY = _max(maxBoundY, y);
@@ -80,11 +88,12 @@ class SSD1306Wire : public OLEDDisplay {
         // If the minBoundY wasn't updated
         // we can savely assume that buffer_back[pos] == buffer[pos]
         // holdes true for all values of pos
-        if (minBoundY == ~0) return;
+
+        if (minBoundY == (uint8_t)(~0)) return;
 
         sendCommand(COLUMNADDR);
-        sendCommand(minBoundX);
-        sendCommand(maxBoundX);
+        sendCommand(x_offset + minBoundX);
+        sendCommand(x_offset + maxBoundX);
 
         sendCommand(PAGEADDR);
         sendCommand(minBoundY);
@@ -97,7 +106,8 @@ class SSD1306Wire : public OLEDDisplay {
               Wire.beginTransmission(_address);
               Wire.write(0x40);
             }
-            Wire.write(buffer[x + y * DISPLAY_WIDTH]);
+
+            Wire.write(buffer[x + y * this->width()]);
             k++;
             if (k == 16)  {
               Wire.endTransmission();
@@ -113,14 +123,20 @@ class SSD1306Wire : public OLEDDisplay {
       #else
 
         sendCommand(COLUMNADDR);
-        sendCommand(0x0);
-        sendCommand(0x7F);
+        sendCommand(x_offset);
+        sendCommand(x_offset + (this->width() - 1));
 
         sendCommand(PAGEADDR);
         sendCommand(0x0);
-        sendCommand(0x7);
+        sendCommand((this->height() / 8) - 1);
 
-        for (uint16_t i=0; i < DISPLAY_BUFFER_SIZE; i++) {
+        if (geometry == GEOMETRY_128_64) {
+          sendCommand(0x7);
+        } else if (geometry == GEOMETRY_128_32) {
+          sendCommand(0x3);
+        }
+
+        for (uint16_t i=0; i < displayBufferSize; i++) {
           Wire.beginTransmission(this->_address);
           Wire.write(0x40);
           for (uint8_t x = 0; x < 16; x++) {
@@ -133,14 +149,24 @@ class SSD1306Wire : public OLEDDisplay {
       #endif
     }
 
+    void setI2cAutoInit(bool doI2cAutoInit) {
+      _doI2cAutoInit = doI2cAutoInit;
+    }
+
   private:
     inline void sendCommand(uint8_t command) __attribute__((always_inline)){
+      initI2cIfNeccesary();
       Wire.beginTransmission(_address);
       Wire.write(0x80);
       Wire.write(command);
       Wire.endTransmission();
     }
 
+    void initI2cIfNeccesary() {
+      if (_doI2cAutoInit) {
+        Wire.begin(this->_sda, this->_scl);
+      }
+    }
 
 };
 

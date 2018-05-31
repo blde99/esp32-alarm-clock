@@ -11,12 +11,12 @@
     "frameworks": [
         "arduino"
     ], 
-    "version": "3.2.7", 
+    "version": "4.0.0", 
     "authors": [
         {
             "maintainer": false, 
-            "name": "Daniel Eichhorn", 
-            "url": "http://blog.squix.ch", 
+            "name": "Daniel Eichhorn, ThingPulse", 
+            "url": "https://thingpulse.com", 
             "email": "squix78@gmail.com"
         }, 
         {

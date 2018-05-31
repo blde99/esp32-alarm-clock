@@ -1,4 +1,4 @@
-# esp32-alarm-clock
+# ESP32 Alarm Clock
 
 This project is to create an alarm clock using the following components:
 - esp32 thing

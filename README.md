@@ -2,12 +2,20 @@
 
 This project is to create an alarm clock using the following components:
 - [esp32 thing](https://www.sparkfun.com/products/13907) - I used this because the clock needs to run on battery and this has an integrated charging circuit and connector for a LiPol battery
+- [lithium polymer battery](https://coolcomponents.co.uk/products/lithium-polymer-battery-2000mah)
 - [ds3231 RTC module](https://www.amazon.co.uk/SODIAL-DS3231-AT24C32-Precision-Arduino/dp/B00K67X496/)
 - [ssd1306 OLED display](https://www.amazon.co.uk/SODIAL-DS3231-AT24C32-Precision-Arduino/dp/B00K67X496/)
 - [ky-040 rotary encoder](https://www.amazon.co.uk/SODIAL-DS3231-AT24C32-Precision-Arduino/dp/B00K67X496/)
+- piezo buzzer (can't wake someone up without noise, right?)
 
-The project uses the following schematic
+The clock uses the following schematic
 ![Schematic](/alarm-clock-schematic.png)
+
+### Information
+
+Because the clock runs on the LiPo battery, it spends most of it life in deep sleep and only wakes up on demand or if the alarm is about to go off.
+
+I chose the Sparkfun esp32 thing because of it's low current draw while in deep sleep.  The OLED display also only draws microamps even while on. Because of this, the clock can run for months on battery.  I know that the I could power this using the USB connectory, but there are no plug sockets near where the clock will live, so I needed to power it using battery.
 
 ### Operation
 

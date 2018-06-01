@@ -42,7 +42,7 @@ void rtcInit()
     while (1)
       ; // Loop forever
   }
-  if (!rtc.lostPower())
+  if (rtc.lostPower())
   {
     Serial.println("RTC module is not set due to power loss!"); // Print fail message if RTC can be found but the time is not set
     oled.setFont(ArialMT_Plain_16);                             // Set OLED font
@@ -452,10 +452,10 @@ bool timeCheck()
 void triggerAlarm()
 {
   unsigned long triggerTime = millis();
-  const int displayToggleTime = 500; // 500ms
+  const int displayToggleTime = 1000; // 1 second
   bool displayState = true;          // Set initial displaystate
   uint16_t touchSensorReading;       // Read the analog value for the touch sensor
-  byte touchSampleSize = 3;          // Number of samples we want to take
+  byte touchSampleSize = 5;          // Number of samples we want to take
 
   ledcSetup(ALARM_BUZZER_CHANNEL,                        // Set up LEDC
             ALARM_BUZZER_FREQUENCY,                      // Set LEDC frequency...
@@ -470,13 +470,16 @@ void triggerAlarm()
       touchSensorReading += touchRead(TOUCH_PIN); // We sample the touch pin here...
     }
     touchSensorReading /= touchSampleSize; // ...then take an average,
-
+      Serial.print("Touchpin Value: ");
+      Serial.println(touchSensorReading);
     if (touchSensorReading < TOUCHPIN_SENSITIVITY_THRESHOLD)
     {                           // If the "TOUCH_PIN" has been triggered...
+      Serial.print("Touchpin Value: ");
+      Serial.println(touchSensorReading);
       alarmAcknowledged = true; // ...set "alarmAcknowledged" to true
     }
     if ((millis() - triggerTime) >= displayToggleTime)
-    {                               // If a 500ms has passed...
+    {                               // If a 1 second has passed...
       displayState = !displayState; // ...toggle "displayState"...
       triggerTime = millis();       // ...and start the count again.
     }
@@ -498,6 +501,19 @@ void triggerAlarm()
   ledcWriteTone(ALARM_BUZZER_CHANNEL, 0); // ...and turn off the buzzer.
   ledcDetachPin(ALARM_BUZZER_PIN);        // Detach the buzzer pin (stops leaky noise)
 }
+
+// void triggerAlarm() {
+//   { 
+//     while (!alarmAcknowledged)
+//     {
+//     oled.clear();  
+//     oled.setTextAlignment(TEXT_ALIGN_CENTER);                                                 // Align text to centre of the OLED display
+//     oled.setFont(DejaVu_Sans_40);                                                             // Set the font for the text
+//     oled.drawString(64, 10, String(touchRead(TOUCH_PIN)));                                                      // Draw the time on the display
+//     oled.display();
+//     }
+//    }
+// }
 
 // Function to flash the in built led on first boot.
 // Parameters:

@@ -452,7 +452,7 @@ bool timeCheck()
 void triggerAlarm()
 {
   unsigned long triggerTime = millis();
-  const int displayToggleTime = 1000; // 1 second
+  const int displayToggleTime = 250; // 250ms
   bool displayState = true;          // Set initial displaystate
   uint16_t touchSensorReading;       // Read the analog value for the touch sensor
 
@@ -480,7 +480,7 @@ void triggerAlarm()
       alarmAcknowledged = true; // ...set "alarmAcknowledged" to true
     }
     if ((millis() - triggerTime) >= displayToggleTime)
-    {                               // If a 1 second has passed...
+    {                               // If a 250ms has passed...
       displayState = !displayState; // ...toggle "displayState"...
       triggerTime = millis();       // ...and start the count again.
     }

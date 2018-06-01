@@ -10,7 +10,7 @@
 #define ALARM_BUZZER_FREQUENCY 2000       // Frequency in Hz for buzzer
 #define ALARM_BUZZER_CHANNEL 0            // Channel number for buzzer
 #define ALARM_BUZZER_RESOLUTION 8         // Resolution for buzzer
-#define ALARM_BUZZER_DUTYCYCLE 50         // Duty Cycle for the buzzer - up to 255.  Can be used for adjusting the volume of the buzzer
+#define ALARM_BUZZER_DUTYCYCLE 128        // Duty Cycle for the buzzer - up to 255.  Can be used for adjusting the volume of the buzzer
 #define INBUILT_LED 5                     // Built in LED
 #define BATTERY_READ_PIN 35               // Pin used to read battery voltage
 

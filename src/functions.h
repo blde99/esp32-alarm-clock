@@ -42,7 +42,7 @@ void rtcInit()
     while (1)
       ; // Loop forever
   }
-  if (!rtc.lostPower())
+  if (rtc.lostPower())
   {
     Serial.println("RTC module is not set due to power loss!"); // Print fail message if RTC can be found but the time is not set
     oled.setFont(ArialMT_Plain_16);                             // Set OLED font

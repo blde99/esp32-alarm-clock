@@ -455,7 +455,7 @@ void triggerAlarm()
   const int displayToggleTime = 500; // 500ms
   bool displayState = true;          // Set initial displaystate
   uint16_t touchSensorReading;       // Read the analog value for the touch sensor
-  byte touchSampleSize = 3;          // Number of samples we want to take
+  byte touchSampleSize = 10;         // Number of samples we want to take
 
   ledcSetup(ALARM_BUZZER_CHANNEL,                        // Set up LEDC
             ALARM_BUZZER_FREQUENCY,                      // Set LEDC frequency...

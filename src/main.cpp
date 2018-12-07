@@ -112,7 +112,7 @@ void setup()
     {                       // If current time matches alarm time and the alarm has NOT been acknowledged, trigger the alarm.
       triggerAlarm();       // Alarm has been triggered.
       starttime = millis(); // Start the 5 second loop again to give the user
-      endtime = starttime;  // a chance to do something else. kjhsdf
+      endtime = starttime;  // a chance to do something else.
     }
     endtime = millis(); // Set the endtime variable
   }
